@@ -14,6 +14,7 @@ tank_data* t34_85_data;
 tank_data* sherman_data;
 MainWindow* _window;
 tank_draw_data* draw_data;
+tank_draw_data* draw_data_ai;
 
 //MainWindow* _window;
 
@@ -57,15 +58,27 @@ struct Tank_collection {
     baseTank* tank_class;
     tank_draw_data drawData;
     std::thread tank_thread;
+
     Tank_collection(tank_data* data, baseTank* tank_class)
-            : data(data), tank_class(tank_class),
-              drawData(data->body, data->turret, data->offset),
-              tank_thread(&baseTank::control, this->tank_class)
-    {tank_class->update_draw(&drawData);
-        _window->addTank(&this->drawData);
-        drawData.body_item->setZValue(1);
-        drawData.turret_item->setZValue(2);
+                    : data(data), tank_class(tank_class),
+                        drawData(data->body, data->turret, data->offset),
+                        tank_thread(&baseTank::control, this->tank_class)
+    {
+            tank_class->update_draw(&drawData);
+            _window->addTank(&this->drawData);
+            drawData.body_item->setZValue(1);
+            drawData.turret_item->setZValue(2);
+            tank_thread.detach();  // 分离线程
     }
+    // Tank_collection(tank_data* data, baseTank* tank_class)
+    //         : data(data), tank_class(tank_class),
+    //           drawData(data->body, data->turret, data->offset),
+    //           tank_thread(&baseTank::control, this->tank_class)
+    // {tank_class->update_draw(&drawData);
+    //     _window->addTank(&this->drawData);
+    //     drawData.body_item->setZValue(1);
+    //     drawData.turret_item->setZValue(2);
+    // }
 };
 Tank_collection* create_tank(tank_type t, int id, Ai_Type ai);
 
@@ -113,8 +126,13 @@ int main(int argc, char *argv[]) {
     is2_data = &_is2_data;
     t34_85_data = &_t34_85_data;
     sherman_data = &_sherman_data;
-    std::vector<Tank_collection*> tanks;
-    tanks.push_back(create_tank(sherman, 1, Local));
+
+
+    std::vector<std::unique_ptr<Tank_collection>> tanks;
+    tanks.push_back(std::unique_ptr<Tank_collection>(create_tank(sherman, 1, Local)));
+    tanks.push_back(std::unique_ptr<Tank_collection>(create_tank(tiger, 2, Ai)));
+
+
     window.show();
 //    std::thread r(&Renderer::render, &renderer);
     // std::thread r(&render);
@@ -144,6 +162,9 @@ Tank_collection* create_tank(tank_type t, int id, Ai_Type ai){
     switch (ai) {
         case Local:
             tank_class = new Tank_local(random(0, MAP_X), random(0, MAP_Y), data->body_width/2,id, 2, t);
+            return new Tank_collection(data, tank_class);
+        case Ai:
+            tank_class = new Tank_ai(random(0, MAP_X), random(0, MAP_Y), data->body_width/2,id, 2, t);
             return new Tank_collection(data, tank_class);
     }
 }

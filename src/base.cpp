@@ -68,6 +68,7 @@ int probability_judge(int for_con){
 
 
 void Tank_local::control() {
+    std::cerr << "local";
     chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
     chan<tank_draw_data*> ("local").send(draw);
     while(true){
@@ -187,6 +188,9 @@ void baseTank::fire() {
 
 
 void Tank_ai::control() {
+    std::cerr << "ai";
+    chan<tank_draw_data*> ("ai2").send(draw);
+    chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
     bool changed=false;
     while(true) {
 
@@ -195,14 +199,14 @@ void Tank_ai::control() {
         //move forward
         if(move_judge==0){
             double radian_head= Radians(head_degree);
-            if (pos.x + speed * cos(radian_head) >= MAP_X ||
-                pos.x + speed * cos(radian_head) <= 0 ||
-                pos.y + speed * sin(radian_head) >= MAP_Y ||
-                pos.y + speed * sin(radian_head) <= 0) {
+            if (pos.x + speed * cos(Radians(radian_head)) >= MAP_X ||
+                pos.x + speed * cos(Radians(radian_head)) <= 0 ||
+                pos.y + speed * sin(Radians(radian_head)) >= MAP_Y ||
+                pos.y + speed * sin(Radians(radian_head)) <= 0) {
                 return;
             } else {
-                pos.x += speed * cos(radian_head);
-                pos.y += speed * sin(radian_head);
+                pos.x += speed * cos(Radians(radian_head));
+                pos.y += speed * sin(Radians(radian_head));
                 changed = true;
             }
         }
@@ -235,7 +239,7 @@ void Tank_ai::control() {
 
         //send
         if(changed){
-            chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
+            chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
         //sleep
         std::this_thread::sleep_for(millisecond(FRAME_TIME));

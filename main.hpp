@@ -19,7 +19,7 @@ extern tank_data* is2_data;
 extern tank_data* t34_85_data;
 extern tank_data* sherman_data;
 extern tank_draw_data* draw_data;
-
+extern tank_draw_data* draw_data_ai;
 
 class MainWindow : public QMainWindow
 {
@@ -110,10 +110,11 @@ public slots:
     void render() {
         // while (true) {
             tank = chan<Tank_info>("local").receive();
-            
-
+            tank_ai = chan<Tank_info>("ai2").receive();
+            local = tank;
             if (tank_map.find(tank.id) == tank_map.end()) {
                 draw_data = chan<tank_draw_data*>("local").receive_safe();
+                draw_data_ai = chan<tank_draw_data*>("ai2").receive_safe();
                 tank_map[tank.id] = draw_data;
             } else {
                 draw_data = tank_map[tank.id];
@@ -127,12 +128,17 @@ public slots:
             emit updateNeeded(draw_data->turret_item, map_convert_screen(tank.pos, tank.pos).x + draw_data->offset * cos(
                     Radians(tank.head_degree)), map_convert_screen(tank.pos, tank.pos).y + draw_data->offset * sin(
                     Radians(tank.head_degree)), tank.turret_degree);
-        // }
 
+            emit updateNeeded(draw_data_ai->body_item, map_convert_screen(tank_ai.pos, tank.pos).x, map_convert_screen(tank_ai.pos, tank.pos).y, tank_ai.head_degree);
+            emit updateNeeded(draw_data_ai->turret_item, map_convert_screen(tank_ai.pos, tank.pos).x + draw_data_ai->offset * cos(
+                    Radians(tank_ai.head_degree)), map_convert_screen(tank_ai.pos, tank.pos).y + draw_data_ai->offset * sin(
+                    Radians(tank_ai.head_degree)), tank_ai.turret_degree);
+        // }
     }
 
 private:
     Tank_info tank;
+    Tank_info tank_ai;
     QGraphicsPixmapItem* map_item;
     QTimer* timer;
     std::map<int, tank_draw_data*> tank_map;
