@@ -2,8 +2,8 @@
 // Created by 小小喵姬 on 24-5-13.
 //
 #include "../include/base.hpp"
-#include "../include/grap.hpp"
-#include <iostream>
+#include "grap.hpp"
+//#include <iostream>
 
 #define ROTATE_SPEED PI/4
 #define FOR_STRAIGHT_CRITICAL_VALUE 6.0
@@ -68,7 +68,7 @@ int probability_judge(int for_con){
 
 
 void Tank_local::control() {
-    chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));
+    chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
     chan<tank_draw_data*> ("local").send(draw);
     while(true){
         if(!enable){return;}//destruct & broken
@@ -151,9 +151,10 @@ void Tank_local::control() {
             changed = true;
         }
         //send
-
-            chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));
-
+        col.update_pos(pos.x, pos.y);
+        if(changed){
+            chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
+        }
 //        cout << "x" << pos.x << "y" << pos.y << "degree" << head_degree << std::endl;
         //sleep
         std::this_thread::sleep_for(millisecond(FRAME_TIME));
@@ -230,11 +231,11 @@ void Tank_ai::control() {
             changed = true;
         }
 
-
+        col.update_pos(pos.x, pos.y);
 
         //send
         if(changed){
-            chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));
+            chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
         //sleep
         std::this_thread::sleep_for(millisecond(FRAME_TIME));

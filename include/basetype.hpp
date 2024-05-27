@@ -5,7 +5,7 @@
 #ifndef TANK_BATTLE_BASETYPE_HPP
 #define TANK_BATTLE_BASETYPE_HPP
 
-#include <propidl.h>
+//#include <propidl.h>
 
 
 #include <cmath>
@@ -17,8 +17,8 @@
 #include <QtGui/qpainter.h>
 #include <QtWidgets/qgraphicsview.h>
 #include <QtWidgets/qgraphicsitem.h>
-#include <QGraphicsItem>
-#include <QGraphicsPixmapItem>
+//#include <QGraphicsItem>
+//#include <QGraphicsPixmapItem>
 
 
 #define Radians(x) ((x)*PI/180.0)
@@ -64,26 +64,27 @@ struct tank_draw_data{
 //    draw_buffer body_info;
 //    draw_buffer turret_info;
     QGraphicsScene* scene;
-    tank_draw_data(QPixmap _body, QPixmap _turret, QGraphicsScene* scene, int offset):
+    tank_draw_data(QPixmap _body, QPixmap _turret, int offset):
             body(_body), turret(_turret),
             body_item(new QGraphicsPixmapItem(body)), turret_item(new QGraphicsPixmapItem(turret)),
 //            body_info(&body, body_item), turret_info(&turret, turret_item),
-            offset(offset), scene(scene){
-        scene->addItem(body_item);
-        scene->addItem(turret_item);
+            offset(offset){
+//        scene->addItem(body_item);
+//        scene->addItem(turret_item);
     }
 };
 
 struct Tank_info{
     Tank_info(Tank_info const &info): pos(info.pos), head_degree(info.head_degree), turret_degree(info.turret_degree), enable(info.enable){}
     std::mutex mtx;  // 用于保护这个结构体的互斥锁
+    int id;
     struct position pos;
     double head_degree;
     double turret_degree;
     bool enable;
 
-    Tank_info(): pos(-1, -1){enable = false;}
-    Tank_info(struct position pos, double head_degree, double turret_degree, bool enable): pos(pos), head_degree(head_degree), turret_degree(turret_degree), enable(enable){}
+    Tank_info(): pos(-1, -1), head_degree(0.0), turret_degree(0.0){enable = false;}
+    Tank_info(int id, struct position pos, double head_degree, double turret_degree, bool enable):id(id) , pos(pos), head_degree(head_degree), turret_degree(turret_degree), enable(enable){}
     Tank_info& operator=(const Tank_info& other){
         if(other.pos.x == -1 || other.pos.y == -1){
             return *this;
@@ -110,6 +111,7 @@ struct tank_data
     int offset;
     int body_width;
     int turret_width;
+    tank_data(){}
     tank_data(enum tank_type type){
         switch (type) {
             case churchill:
