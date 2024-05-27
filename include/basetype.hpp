@@ -19,7 +19,7 @@
 
 #define Radians(x) ((x)*PI/180.0)
 #define Degree(x) ((x)*180/PI)
-//#define PI 3.14159265359
+#define PI M_PI
 #define millisecond(x) std::chrono::milliseconds(x)
 #define FLASH_TIME 33
 #define FRAME_TIME 12

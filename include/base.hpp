@@ -71,7 +71,7 @@ public:
      * @length:圆形碰撞箱半径
      * @body_image:tank的模型图片
      * */
-    baseTank(int x, int y, int length, int id, double speed, Ai_Type t, tank_type mo):pos(x, y), col(x, y, length), id(id), speed(speed), type(t), model(mo) { head_degree = PI/2; enable = true; turret_degree = PI;}
+    baseTank(int x, int y, int length, int id, double speed, Ai_Type t, tank_type mo):pos(x, y), col(x, y, length), id(id), speed(speed), type(t), model(mo) { head_degree = 0; enable = true; turret_degree = 0;}
     virtual void control() = 0;
     void update_draw(tank_draw_data* d){
         draw = d;
