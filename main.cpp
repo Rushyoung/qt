@@ -19,7 +19,7 @@ struct Tank_collection {
     std::thread tank_thread;
     Tank_collection(tank_data* data, baseTank* tank_class)
             : data(data), tank_class(tank_class),
-              drawData(&data->body, &data->turret, &body_layer, &turret_layer, data->offset),
+              drawData(&data->body, &data->turret, data->offset),
               tank_thread(&baseTank::control, this->tank_class)
     {tank_class->update_draw(&drawData);}
 };

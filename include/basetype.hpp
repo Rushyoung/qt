@@ -15,6 +15,10 @@
 #include <QCoreApplication>
 #include <QtCore>
 #include <QtGui/qpainter.h>
+#include <QtWidgets/qgraphicsview.h>
+#include <QtWidgets/qgraphicsitem.h>
+#include <QGraphicsItem>
+#include <QGraphicsPixmapItem>
 
 
 #define Radians(x) ((x)*PI/180.0)
@@ -41,12 +45,11 @@ struct position{
 };
 double distance(const position& a, const position& b);
 
-struct draw_buffer{
-    double degree_now;
-    hiex::Canvas* dst;
-    hiex::ImageBlock* block;
-    draw_buffer(hiex::Canvas* dst, hiex::ImageBlock* block): dst(dst), block((block)), degree_now(0.0){}
-};
+//struct draw_buffer{
+//    double degree_now;
+//    QGraphicsPixmapItem* dst;
+//    draw_buffer(QGraphicsPixmapItem* dst): dst(dst), degree_now(0.0){}
+//};
 
 /*
  * @brief:需要先给imageblock分配空间
@@ -54,19 +57,20 @@ struct draw_buffer{
 struct tank_draw_data{
     int id;
     int offset;
-    hiex::Canvas body;
-    hiex::Canvas turret;
-    hiex::ImageBlock body_block;
-    hiex::ImageBlock turret_block;
-    draw_buffer body_info;
-    draw_buffer turret_info;
-    tank_draw_data(hiex::Canvas* _body, hiex::Canvas* _turret, hiex::Layer* body_layer, hiex::Layer* turret_layer, int offset):
+    QPixmap body;
+    QPixmap turret;
+    QGraphicsPixmapItem* body_item;
+    QGraphicsPixmapItem* turret_item;
+//    draw_buffer body_info;
+//    draw_buffer turret_info;
+    QGraphicsScene* scene;
+    tank_draw_data(QPixmap _body, QPixmap _turret, QGraphicsScene* scene, int offset):
             body(_body), turret(_turret),
-            body_block(&body), turret_block(&turret),
-            body_info(&body, &body_block), turret_info(&turret, &turret_block),
-            offset(offset){
-        body_layer->push_back(&body_block);
-        turret_layer->push_back(&turret_block);
+            body_item(new QGraphicsPixmapItem(body)), turret_item(new QGraphicsPixmapItem(turret)),
+//            body_info(&body, body_item), turret_info(&turret, turret_item),
+            offset(offset), scene(scene){
+        scene->addItem(body_item);
+        scene->addItem(turret_item);
     }
 };
 

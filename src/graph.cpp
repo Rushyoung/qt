@@ -5,45 +5,60 @@
 #include <QtGui/qpainter.h>
 #include "../include/grap.hpp"
 
+
+MainWindow::MainWindow(QWidget *parent)
+        : QMainWindow(parent)
+{
+    scene = new QGraphicsScene(this);
+    view = new QGraphicsView(scene, this);
+
+    // 设置视图的大小和位置
+    view->setGeometry(0, 0, SCREEN_LENGTH, SCREEN_WIDTH);
+
+    // 将视图添加到主窗口中
+    this->setCentralWidget(view);
+}
+
+
 /*
  * @img:源图像
  * @angle:角度（弧度）
  * @centerX:屏幕坐标系
  * @centerY:屏幕坐标系
  * */
-void rotate_draw(draw_buffer *buffer, double angle, int x, int y) {
-    // 计算图像的中心点
-    int imgCenterX = buffer->dst->getwidth() / 2;
-    int imgCenterY = buffer->dst->getheight() / 2;
-
-    // 设置坐标系的原点为旋转中心
-//    setorigin(centerX, centerY);
-    buffer->block->SetPos(x - imgCenterX, y - imgCenterY);
-
-//    cout << "center" << x - imgCenterX << std::endl;
-    // 旋转图像和掩码
-//    cout << "rotate" << angle - buffer->degree_now << std::endl;
-    buffer->dst->RotateImage_Alpha(angle - buffer->degree_now);
-    buffer->degree_now = angle;
-
-
-    //easyx废案
-//    rotateimage(mask, mask, Radians(angle), WHITE);
-
-//    // 使用 SRCAND ROP 代码将旋转后的掩码图像绘制到屏幕上
-//    putimage(-imgCenterX, -imgCenterY, mask, SRCAND);
+//void rotate_draw(draw_buffer *buffer, double angle, int x, int y) {
+//    // 计算图像的中心点
+//    int imgCenterX = buffer->dst->getwidth() / 2;
+//    int imgCenterY = buffer->dst->getheight() / 2;
 //
-//    // 使用 SRCPAINT ROP 代码将旋转后的图像绘制到屏幕上
-//    putimage(-imgCenterX, -imgCenterY, img, SRCPAINT);
-
-    // 恢复坐标系的原点
-//    setorigin(0, 0);
-}
+//    // 设置坐标系的原点为旋转中心
+////    setorigin(centerX, centerY);
+//    buffer->block->SetPos(x - imgCenterX, y - imgCenterY);
+//
+////    cout << "center" << x - imgCenterX << std::endl;
+//    // 旋转图像和掩码
+////    cout << "rotate" << angle - buffer->degree_now << std::endl;
+//    buffer->dst->RotateImage_Alpha(angle - buffer->degree_now);
+//    buffer->degree_now = angle;
+//
+//
+//    //easyx废案
+////    rotateimage(mask, mask, Radians(angle), WHITE);
+//
+////    // 使用 SRCAND ROP 代码将旋转后的掩码图像绘制到屏幕上
+////    putimage(-imgCenterX, -imgCenterY, mask, SRCAND);
+////
+////    // 使用 SRCPAINT ROP 代码将旋转后的图像绘制到屏幕上
+////    putimage(-imgCenterX, -imgCenterY, img, SRCPAINT);
+//
+//    // 恢复坐标系的原点
+////    setorigin(0, 0);
+//}
 
 void render(){
 
-    hiex::Window wnd(SCREEN_LENGTH, SCREEN_WIDTH);
-    wnd.BindCanvas(&Screen);
+    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(QPixmap(":/images/tank.png"));
+
     Map_canvas.Load_Image_Alpha(_T("../source/map1.png"));
     map_block.SetCanvas(&Map_canvas);
     map_layer.push_back(&map_block);
@@ -113,7 +128,7 @@ position map_convert_screen(position& base, position& origin){
 
 
 
-void draw_tank(QPixmap* body, QPixmap* turret, double head_degree, double turret_degree, int center_x, int center_y, int turretOffsetX, int turretOffsetY = 0) {
+void MainWindow::draw_tank(tank_draw_data* draw_buffer, double head_degree, double turret_degree, int center_x, int center_y, int turretOffsetX, int turretOffsetY = 0) {
     QPainter painter;
     // 计算新的偏移量
     int newOffsetX = turretOffsetX * cos(qDegreesToRadians(head_degree)) - turretOffsetY * sin(qDegreesToRadians(head_degree));
@@ -121,12 +136,12 @@ void draw_tank(QPixmap* body, QPixmap* turret, double head_degree, double turret
     // 旋转并绘制坦克车身
     painter.translate(center_x, center_y);
     painter.rotate(-head_degree);
-    painter.drawPixmap(-body->width() / 2, -body->height() / 2, *body);
+    painter.drawPixmap(-draw_buffer->body.width() / 2, -draw_buffer->body.height() / 2, *body);
     painter.resetTransform();
     // 旋转并绘制炮塔
     painter.translate(center_x + newOffsetX, center_y + newOffsetY);
     painter.rotate(-turret_degree);
-    painter.drawPixmap(-turret->width() / 2, -turret->height() / 2, *turret);
+    painter.drawPixmap(-draw_buffer->turret.width() / 2, -draw_buffer->turret.height() / 2, *turret);
     painter.resetTransform();
 }
 // void draw_tank(tank_draw_data* buffer, double head_degree, double turret_degree, int center_x, int center_y,  int turretOffsetX, int turretOffsetY) {

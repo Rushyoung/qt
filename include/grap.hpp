@@ -8,6 +8,8 @@
 //#include <graphics.h>
 
 #include <vector>
+#include <QtWidgets/qmainwindow.h>
+
 #ifndef TANK_BATTLE_GRAP_HPP
 #define TANK_BATTLE_GRAP_HPP
 extern Tank_info local;
@@ -19,7 +21,20 @@ extern hiex::Canvas Map_canvas;
 extern hiex::ImageBlock map_block;
 extern hiex::Canvas Screen;
 
+class MainWindow : public QMainWindow
+{
+Q_OBJECT
 
+public:
+    MainWindow(QWidget *parent = nullptr);
+    void draw_tank(tank_draw_data* draw_buffer, double head_degree, double turret_degree, int center_x, int center_y, int turretOffsetX, int turretOffsetY = 0);
+    ~MainWindow();
+    QGraphicsScene* getScene(){return scene;}
+
+private:
+    QGraphicsScene *scene;
+    QGraphicsView *view;
+};
 
 void rotate_draw(draw_buffer *buffer, double angle, int x, int y);
 
