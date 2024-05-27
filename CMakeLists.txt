@@ -11,7 +11,11 @@ find_package(Qt6 COMPONENTS
         Core
         REQUIRED)
 
-add_executable(qt main.cpp)
+add_executable(qt main.cpp
+        src/base.cpp
+        src/basetype.cpp
+        src/graph.cpp
+        src/net.cpp)
 target_link_libraries(qt
         Qt::Core
 )
