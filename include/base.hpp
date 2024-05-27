@@ -99,7 +99,7 @@ protected:
 
 class Tank_local : public baseTank{
 public:
-    Tank_local(int x, int y, int length, int id, double speed, tank_type t): baseTank(x, y, length, id, speed, Local, t), speed(speed){chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));}
+    Tank_local(int x, int y, int length, int id, double speed, tank_type t): baseTank(x, y, length, id, speed, Local, t), speed(speed){chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));}
     void control() override;
 protected:
     double speed;

@@ -19,7 +19,8 @@ add_executable(qt main.cpp
         src/base.cpp
         src/basetype.cpp
         src/graph.cpp
-        src/net.cpp)
+        src/net.cpp
+        main.hpp)
 target_link_libraries(qt
         Qt::Core
         Qt::Widgets

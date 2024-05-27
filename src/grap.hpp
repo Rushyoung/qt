@@ -1,3 +1,4 @@
+
 //
 // Created by rushy on 24-5-24.
 //
@@ -15,20 +16,6 @@
 #define TANK_BATTLE_GRAP_HPP
 extern Tank_info local;
 
-
-class MainWindow : public QMainWindow
-{
-Q_OBJECT
-public:
-    explicit MainWindow(QWidget *parent = nullptr);
-    void draw_tank(tank_draw_data* draw_buffer, double head_degree, double turret_degree, int center_x, int center_y, int turretOffsetX, int turretOffsetY = 0);
-    ~MainWindow() override;
-    QGraphicsScene* getScene(){return scene;}
-
-private:
-    QGraphicsScene *scene;
-    QGraphicsView *view;
-};
 
 //void rotate_draw(draw_buffer *buffer, double angle, int x, int y);
 

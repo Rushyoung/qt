@@ -77,13 +77,14 @@ struct tank_draw_data{
 struct Tank_info{
     Tank_info(Tank_info const &info): pos(info.pos), head_degree(info.head_degree), turret_degree(info.turret_degree), enable(info.enable){}
     std::mutex mtx;  // 用于保护这个结构体的互斥锁
+    int id;
     struct position pos;
     double head_degree;
     double turret_degree;
     bool enable;
 
     Tank_info(): pos(-1, -1), head_degree(0.0), turret_degree(0.0){enable = false;}
-    Tank_info(struct position pos, double head_degree, double turret_degree, bool enable): pos(pos), head_degree(head_degree), turret_degree(turret_degree), enable(enable){}
+    Tank_info(int id, struct position pos, double head_degree, double turret_degree, bool enable):id(id) , pos(pos), head_degree(head_degree), turret_degree(turret_degree), enable(enable){}
     Tank_info& operator=(const Tank_info& other){
         if(other.pos.x == -1 || other.pos.y == -1){
             return *this;

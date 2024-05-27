@@ -4,13 +4,13 @@
 #include <QtCore>
 #include <QtGui/qpainter.h>
 #include "grap.hpp"
-MainWindow::~MainWindow() {
+/*MainWindow::~MainWindow() {
     delete scene;
     delete view;
-}
+}*/
 
 
-MainWindow::MainWindow(QWidget *parent)
+/*MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
 {
     scene = new QGraphicsScene(this);
@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 将视图添加到主窗口中
     this->setCentralWidget(view);
-}
+}*/
 
 
 /*
@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    // 恢复坐标系的原点
 ////    setorigin(0, 0);
 //}
+/*
 
 void render(){
     MainWindow window;
@@ -131,6 +132,7 @@ void render(){
 
 }
 
+*/
 
 //转换为使用origin为屏幕中心的坐标系
 position map_convert_screen(position& base, position& origin){
@@ -140,7 +142,7 @@ position map_convert_screen(position& base, position& origin){
 
 
 
-void MainWindow::draw_tank(tank_draw_data* draw_buffer, double head_degree, double turret_degree, int center_x, int center_y, int turretOffsetX, int turretOffsetY) {
+/*void MainWindow::draw_tank(tank_draw_data* draw_buffer, double head_degree, double turret_degree, int center_x, int center_y, int turretOffsetX, int turretOffsetY) {
     // 计算新的偏移量
     int newOffsetX = turretOffsetX * cos(qDegreesToRadians(head_degree)) - turretOffsetY * sin(qDegreesToRadians(head_degree));
     int newOffsetY = turretOffsetX * sin(qDegreesToRadians(head_degree)) + turretOffsetY * cos(qDegreesToRadians(head_degree));
@@ -156,7 +158,7 @@ void MainWindow::draw_tank(tank_draw_data* draw_buffer, double head_degree, doub
     turretTransform.translate(center_x + newOffsetX, center_y + newOffsetY);
     turretTransform.rotate(-turret_degree);
     draw_buffer->turret_item->setTransform(turretTransform);
-}
+}*/
 // void draw_tank(tank_draw_data* buffer, double head_degree, double turret_degree, int center_x, int center_y,  int turretOffsetX, int turretOffsetY) {
 //     // 计算新的炮塔偏移量
 // //    cout << "ddd" << head_degree << std::endl;

@@ -66,7 +66,7 @@ int probability_judge(int for_con){
 
 
 void Tank_local::control() {
-    chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));
+    chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
     chan<tank_draw_data*> ("local").send(draw);
     while(true){
         if(!enable){return;}//destruct & broken
@@ -151,7 +151,7 @@ void Tank_local::control() {
         //send
         col.update_pos(pos.x, pos.y);
         if(changed){
-            chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));
+            chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
 //        cout << "x" << pos.x << "y" << pos.y << "degree" << head_degree << std::endl;
         //sleep
@@ -218,7 +218,7 @@ void Tank_ai::control() {
 
         //send
         if(changed){
-            chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));
+            chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
         //sleep
         std::this_thread::sleep_for(millisecond(FRAME_TIME));
