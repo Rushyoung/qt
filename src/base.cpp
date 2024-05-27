@@ -1,11 +1,12 @@
 //
 // Created by 小小喵姬 on 24-5-13.
 //
+
 #include "../include/base.hpp"
 #include "grap.hpp"
 //#include <iostream>
 
-#define ROTATE_SPEED PI/4
+#define ROTATE_SPEED PI/100
 #define FOR_STRAIGHT_CRITICAL_VALUE 6.0
 #define FOR_TURN_CRITICAL_VALUE 8.0
 #define FIRST_DECISION 5
@@ -97,7 +98,8 @@ void Tank_local::control() {
                 pos.y + speed * sin(radian_head) <= 0)){
                 pos.x += speed * cos(radian_head);
                 pos.y += speed * sin(radian_head);
-//                cout << "+" << pos.x << std::endl;
+//                cout << "local:" << pos.x ;
+//                cout << " local:" << pos.y << std::endl;
                 changed = true;
             }
         }
@@ -109,11 +111,11 @@ void Tank_local::control() {
                 pos.x - speed * cos(radian_head) <= 0 ||
                 pos.y - speed * sin(radian_head) >= MAP_Y ||
                 pos.y - speed * sin(radian_head) <= 0)){
-
                 pos.x -= speed * cos(radian_head);
                 pos.y -= speed * sin(radian_head);
                 changed = true;
-//                cout << "-" << pos.x << std::endl;
+//                cout << "local:" << pos.x ;
+//                cout << " local:" << pos.y << std::endl;
             }
         }
         //rotate-
@@ -166,6 +168,8 @@ void Tank_local::control() {
                 this->broken();
             }
         }
+
+//        this->fire();
     }
 }
 
@@ -207,12 +211,14 @@ void Tank_ai::control() {
             } else {
                 pos.x += speed * cos(Radians(radian_head));
                 pos.y += speed * sin(Radians(radian_head));
+//                cout << "AI:" << pos.x ;
+//                cout << " AI:" << pos.y << std::endl;
                 changed = true;
             }
         }
         //rotate+，顺时针旋转
         else if(move_judge==1){
-            head_degree += ROTATE_SPEED;
+            head_degree += Degree(ROTATE_SPEED);
             while (head_degree >= 360) {
                 head_degree -= 360;
             }
@@ -220,7 +226,7 @@ void Tank_ai::control() {
         }
         //rotate-，逆时针旋转
         else{
-            head_degree -= ROTATE_SPEED;
+            head_degree -= Degree(ROTATE_SPEED);
             while (head_degree < 0) {
                 head_degree += 360;
             }
