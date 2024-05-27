@@ -87,12 +87,13 @@ void Tank_local::control() {
         //move forward
         if(GetAsyncKeyState('W')&0x8000){
 //            std::cerr << "up" << std::endl;
-            if (!(pos.x + speed * cos(head_degree) >= MAP_X ||
-                pos.x + speed * cos(head_degree) <= 0 ||
-                pos.y + speed * sin(head_degree) >= MAP_Y ||
-                pos.y + speed * sin(head_degree) <= 0)){
-                pos.x += speed * cos(head_degree);
-                pos.y += speed * sin(head_degree);
+            double radian_head= Radians(head_degree);
+            if (!(pos.x + speed * cos(radian_head) >= MAP_X ||
+                pos.x + speed * cos(radian_head) <= 0 ||
+                pos.y + speed * sin(radian_head) >= MAP_Y ||
+                pos.y + speed * sin(radian_head) <= 0)){
+                pos.x += speed * cos(radian_head);
+                pos.y += speed * sin(radian_head);
 //                cout << "+" << pos.x << std::endl;
                 changed = true;
             }
@@ -100,13 +101,14 @@ void Tank_local::control() {
         //move backward
         if(GetAsyncKeyState('S')&0x8000){
 //            std::cerr << "down" << std::endl;
-            if (!(pos.x - speed * cos(head_degree) >= MAP_X ||
-                pos.x - speed * cos(head_degree) <= 0 ||
-                pos.y - speed * sin(head_degree) >= MAP_Y ||
-                pos.y - speed * sin(head_degree) <= 0)){
+            double radian_head= Radians(head_degree);
+            if (!(pos.x - speed * cos(radian_head) >= MAP_X ||
+                pos.x - speed * cos(radian_head) <= 0 ||
+                pos.y - speed * sin(radian_head) >= MAP_Y ||
+                pos.y - speed * sin(radian_head) <= 0)){
 
-                pos.x -= speed * cos(head_degree);
-                pos.y -= speed * sin(head_degree);
+                pos.x -= speed * cos(radian_head);
+                pos.y -= speed * sin(radian_head);
                 changed = true;
 //                cout << "-" << pos.x << std::endl;
             }
@@ -114,35 +116,35 @@ void Tank_local::control() {
         //rotate-
         if(GetAsyncKeyState('A')&0x8000){
 //            std::cerr << "turn-" << std::endl;
-            head_degree -= ROTATE_SPEED;
+            head_degree -= Degree(ROTATE_SPEED);
             while (head_degree < 0) {
-                head_degree += 2*PI;
+                head_degree += 360;
             }
             changed = true;
         }
         //rotate+
         if(GetAsyncKeyState('D')&0x8000){
 //            std::cerr << "turn+" << std::endl;
-            head_degree += ROTATE_SPEED;
-            while (head_degree > 2*PI) {
-                head_degree -= 2*PI;
+            head_degree += Degree(ROTATE_SPEED);
+            while (head_degree > 360) {
+                head_degree -= 360;
             }
 //            cout<< "degreeeeeeeee"<< head_degree<<std::endl;
             changed = true;
         }
         if(GetAsyncKeyState(VK_RIGHT)&0x8000){
 //            std::cerr << "turn-" << std::endl;
-            turret_degree -= ROTATE_SPEED;
+            turret_degree -= Degree(ROTATE_SPEED);
             while (turret_degree < 0) {
-                turret_degree += 2*PI;
+                turret_degree += 360;
             }
             changed = true;
         }
         if(GetAsyncKeyState(VK_LEFT)&0x8000){
 //            std::cerr << "turn-" << std::endl;
-            turret_degree += ROTATE_SPEED;
+            turret_degree += Degree(ROTATE_SPEED);
             while (turret_degree < 0) {
-                turret_degree += 2*PI;
+                turret_degree += 360;
             }
             changed = true;
         }
@@ -174,14 +176,15 @@ void Tank_ai::control() {
 
         //move forward
         if(move_judge==0){
-            if (pos.x + speed * cos(Radians(head_degree)) >= MAP_X ||
-                pos.x + speed * cos(Radians(head_degree)) <= 0 ||
-                pos.y + speed * sin(Radians(head_degree)) >= MAP_Y ||
-                pos.y + speed * sin(Radians(head_degree)) <= 0) {
+            double radian_head= Radians(head_degree);
+            if (pos.x + speed * cos(Radians(radian_head)) >= MAP_X ||
+                pos.x + speed * cos(Radians(radian_head)) <= 0 ||
+                pos.y + speed * sin(Radians(radian_head)) >= MAP_Y ||
+                pos.y + speed * sin(Radians(radian_head)) <= 0) {
                 return;
             } else {
-                pos.x += speed * cos(Radians(head_degree));
-                pos.y += speed * sin(Radians(head_degree));
+                pos.x += speed * cos(Radians(radian_head));
+                pos.y += speed * sin(Radians(radian_head));
                 changed = true;
             }
         }
