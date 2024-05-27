@@ -3,7 +3,11 @@
 //
 #include <QtCore>
 #include <QtGui/qpainter.h>
-#include "../include/grap.hpp"
+#include "grap.hpp"
+MainWindow::~MainWindow() {
+    delete scene;
+    delete view;
+}
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -56,17 +60,22 @@ MainWindow::MainWindow(QWidget *parent)
 //}
 
 void render(){
+    MainWindow window;
+    window.show();
+    QGraphicsScene* Screen = window.getScene();
+    QPixmap map_pix("/source/map1.png");
+    QGraphicsPixmapItem map_item(map_pix);
+    Screen->addItem(&map_item);
+//    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(QPixmap(":/images/tank.png"));
 
-    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(QPixmap(":/images/tank.png"));
-
-    Map_canvas.Load_Image_Alpha(_T("../source/map1.png"));
-    map_block.SetCanvas(&Map_canvas);
-    map_layer.push_back(&map_block);
-    main_scene.push_back(&map_layer);
-    main_scene.push_back(&body_layer);
-    main_scene.push_back(&turret_layer);
-    cout << "construct"<<std::endl;
-
+//    Map_canvas.Load_Image_Alpha(_T("../source/map1.png"));
+//    map_block.SetCanvas(&Map_canvas);
+//    map_layer.push_back(&map_block);
+//    main_scene.push_back(&map_layer);
+//    main_scene.push_back(&body_layer);
+//    main_scene.push_back(&turret_layer);
+//    cout << "construct"<<std::endl;
+//    std::vector<Tank_info> ai;
     Tank_info ai[AI_AMOUNT];
     Tank_info remote[REMOTE_MAX];
 
@@ -78,10 +87,13 @@ void render(){
     }
     local = chan<Tank_info>("local").receive();
     tank_draw_data* local_draw = chan<tank_draw_data*> ("local").receive_safe();
-    body_layer.push_back(&local_draw->body_block);
-    turret_layer.push_back(&local_draw->turret_block);
+    local_draw->scene = Screen;
+    Screen->addItem(local_draw->body_item);
+    Screen->addItem(local_draw->turret_item);
+//    body_layer.push_back(&local_draw->body_block);
+//    turret_layer.push_back(&local_draw->turret_block);
     //render begin
-    double i = 0;
+
     while(true){
         local = chan<Tank_info>("local").receive();
 //        cout<<local.pos.y << std::endl;
@@ -89,28 +101,28 @@ void render(){
         temp = position(0, 0);
         temp = position(SCREEN_LENGTH/2, SCREEN_WIDTH/2) - local.pos;
 
-        if (wnd.BeginTask()) {
-
-            draw_tank(local_draw, local.head_degree, local.turret_degree, map_convert_screen(local.pos, local.pos).x,
-                      map_convert_screen(local.pos, local.pos).y,
-                      local_draw->offset, 0);
-
-//            draw_tank(local_draw, -i++ * PI / 4, i++ * PI / 4, map_convert_screen(local.pos, local.pos).x,
+//        if (wnd.BeginTask()) {
+//
+//            draw_tank(local_draw, local.head_degree, local.turret_degree, map_convert_screen(local.pos, local.pos).x,
 //                      map_convert_screen(local.pos, local.pos).y,
 //                      local_draw->offset, 0);
-
-
-//            map_block.SetPos(-2000,-2000);
-            map_block.SetPos(temp.x, temp.y);
-
-//            draw_tank(local_draw, PI/2, 0.0, map_convert_screen(local.pos, local.pos).x,
-//                      map_convert_screen(local.pos, local.pos).y,
-//                      local_draw->offset, 0);
-
-            main_scene.Render(Screen.GetImagePointer());
-            wnd.EndTask();
-            wnd.Redraw();
-        }
+//
+////            draw_tank(local_draw, -i++ * PI / 4, i++ * PI / 4, map_convert_screen(local.pos, local.pos).x,
+////                      map_convert_screen(local.pos, local.pos).y,
+////                      local_draw->offset, 0);
+//
+//
+////            map_block.SetPos(-2000,-2000);
+//            map_block.SetPos(temp.x, temp.y);
+//
+////            draw_tank(local_draw, PI/2, 0.0, map_convert_screen(local.pos, local.pos).x,
+////                      map_convert_screen(local.pos, local.pos).y,
+////                      local_draw->offset, 0);
+//
+//            main_scene.Render(Screen.GetImagePointer());
+//            wnd.EndTask();
+//            wnd.Redraw();
+//        }
 //        hiex::DelayFPS(60);
 //        std::this_thread::sleep_for(millisecond(FLASH_TIME));
         std::this_thread::sleep_for(millisecond(33));
@@ -128,21 +140,22 @@ position map_convert_screen(position& base, position& origin){
 
 
 
-void MainWindow::draw_tank(tank_draw_data* draw_buffer, double head_degree, double turret_degree, int center_x, int center_y, int turretOffsetX, int turretOffsetY = 0) {
-    QPainter painter;
+void MainWindow::draw_tank(tank_draw_data* draw_buffer, double head_degree, double turret_degree, int center_x, int center_y, int turretOffsetX, int turretOffsetY) {
     // 计算新的偏移量
     int newOffsetX = turretOffsetX * cos(qDegreesToRadians(head_degree)) - turretOffsetY * sin(qDegreesToRadians(head_degree));
     int newOffsetY = turretOffsetX * sin(qDegreesToRadians(head_degree)) + turretOffsetY * cos(qDegreesToRadians(head_degree));
-    // 旋转并绘制坦克车身
-    painter.translate(center_x, center_y);
-    painter.rotate(-head_degree);
-    painter.drawPixmap(-draw_buffer->body.width() / 2, -draw_buffer->body.height() / 2, *body);
-    painter.resetTransform();
-    // 旋转并绘制炮塔
-    painter.translate(center_x + newOffsetX, center_y + newOffsetY);
-    painter.rotate(-turret_degree);
-    painter.drawPixmap(-draw_buffer->turret.width() / 2, -draw_buffer->turret.height() / 2, *turret);
-    painter.resetTransform();
+
+    // 设置坦克车身的转换
+    QTransform bodyTransform;
+    bodyTransform.translate(center_x, center_y);
+    bodyTransform.rotate(-head_degree);
+    draw_buffer->body_item->setTransform(bodyTransform);
+
+    // 设置炮塔的转换
+    QTransform turretTransform;
+    turretTransform.translate(center_x + newOffsetX, center_y + newOffsetY);
+    turretTransform.rotate(-turret_degree);
+    draw_buffer->turret_item->setTransform(turretTransform);
 }
 // void draw_tank(tank_draw_data* buffer, double head_degree, double turret_degree, int center_x, int center_y,  int turretOffsetX, int turretOffsetY) {
 //     // 计算新的炮塔偏移量
@@ -171,17 +184,17 @@ void MainWindow::draw_tank(tank_draw_data* draw_buffer, double head_degree, doub
 //    rotate_draw(&buffer->turret_info,  turret_degree, center_x + newOffsetX + buffer->turret_info.dst->getwidth() / 2, center_y + buffer->turret_info.dst->getheight() / 2);
 //}
 
-
-void tank_turret(IMAGE* original, IMAGE* body, IMAGE* turret,
-                 position body_pos, position turret_pos,
-                 int bodyWidth, int turretWidth) {
-    int bodyHeight = bodyWidth;
-    int turretHeight = turretWidth;
-    // 从 original 中裁剪出 body 和 turret 的图像
-    SetWorkingImage(original);
-    getimage(body, body_pos.x, body_pos.y, bodyWidth, bodyHeight);
-    getimage(turret, turret_pos.x, turret_pos.y, turretWidth, turretHeight);
-    SetWorkingImage(NULL);
-}
+//
+//void tank_turret(IMAGE* original, IMAGE* body, IMAGE* turret,
+//                 position body_pos, position turret_pos,
+//                 int bodyWidth, int turretWidth) {
+//    int bodyHeight = bodyWidth;
+//    int turretHeight = turretWidth;
+//    // 从 original 中裁剪出 body 和 turret 的图像
+//    SetWorkingImage(original);
+//    getimage(body, body_pos.x, body_pos.y, bodyWidth, bodyHeight);
+//    getimage(turret, turret_pos.x, turret_pos.y, turretWidth, turretHeight);
+//    SetWorkingImage(NULL);
+//}
 
 

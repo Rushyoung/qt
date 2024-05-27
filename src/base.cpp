@@ -2,8 +2,8 @@
 // Created by 小小喵姬 on 24-5-13.
 //
 #include "../include/base.hpp"
-#include "../include/grap.hpp"
-#include <iostream>
+#include "grap.hpp"
+//#include <iostream>
 
 #define ROTATE_SPEED PI/4
 #define FOR_STRAIGHT_CRITICAL_VALUE 6.0
@@ -149,9 +149,10 @@ void Tank_local::control() {
             changed = true;
         }
         //send
-
+        col.update_pos(pos.x, pos.y);
+        if(changed){
             chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));
-
+        }
 //        cout << "x" << pos.x << "y" << pos.y << "degree" << head_degree << std::endl;
         //sleep
         std::this_thread::sleep_for(millisecond(FRAME_TIME));
@@ -213,7 +214,7 @@ void Tank_ai::control() {
             changed = true;
         }
 
-
+        col.update_pos(pos.x, pos.y);
 
         //send
         if(changed){
