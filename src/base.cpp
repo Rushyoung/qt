@@ -10,6 +10,8 @@
 #define FOR_TURN_CRITICAL_VALUE 8.0
 #define FIRST_DECISION 5
 
+std::vector<Bullet> bullets;
+
 int whether_first=0;//0为第一次，1为后续
 
 int for_condition=0;//0为前进，1为转弯
@@ -155,16 +157,31 @@ void Tank_local::control() {
 //        cout << "x" << pos.x << "y" << pos.y << "degree" << head_degree << std::endl;
         //sleep
         std::this_thread::sleep_for(millisecond(FRAME_TIME));
+
+
+        for (auto& bullet : bullets) { // 遍历并更新所有子弹
+            if(bullet.co()->is_coincide(this->col)){
+                this->broken();
+            }
+        }
     }
 }
 
 void baseTank::broken() {
-
+    enable=false;
 }
 
 position Bullet::get_Bullet_pos() {
     return position(origin_pos.x + BULLET_SPEED * fire_timestamp * cos(Radians(degree)),
                     origin_pos.y + BULLET_SPEED * fire_timestamp * sin(Radians(degree)));
+}
+
+void baseTank::fire() {
+    while(true){
+        if(GetAsyncKeyState(VK_SPACE)&0x8000){
+            bullets.emplace_back(this);
+        }
+    }
 }
 
 
@@ -177,14 +194,14 @@ void Tank_ai::control() {
         //move forward
         if(move_judge==0){
             double radian_head= Radians(head_degree);
-            if (pos.x + speed * cos(Radians(radian_head)) >= MAP_X ||
-                pos.x + speed * cos(Radians(radian_head)) <= 0 ||
-                pos.y + speed * sin(Radians(radian_head)) >= MAP_Y ||
-                pos.y + speed * sin(Radians(radian_head)) <= 0) {
+            if (pos.x + speed * cos(radian_head) >= MAP_X ||
+                pos.x + speed * cos(radian_head) <= 0 ||
+                pos.y + speed * sin(radian_head) >= MAP_Y ||
+                pos.y + speed * sin(radian_head) <= 0) {
                 return;
             } else {
-                pos.x += speed * cos(Radians(radian_head));
-                pos.y += speed * sin(Radians(radian_head));
+                pos.x += speed * cos(radian_head);
+                pos.y += speed * sin(radian_head);
                 changed = true;
             }
         }
@@ -221,5 +238,11 @@ void Tank_ai::control() {
         }
         //sleep
         std::this_thread::sleep_for(millisecond(FRAME_TIME));
+
+        for (auto& bullet : bullets) { // 遍历并更新所有子弹
+            if(bullet.co()->is_coincide(this->col)){
+                this->broken();
+            }
+        }
     }
 }

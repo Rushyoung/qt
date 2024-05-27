@@ -82,6 +82,7 @@ public:
     struct position getPos(){return pos;}
     double getDegree(){return head_degree;}
     double getTurrent_degree(){return turret_degree;}
+    void fire();
     void broken();
 protected:
     tank_draw_data* draw;
@@ -124,12 +125,14 @@ public:
         BULLET_LENGTH,
         tank->getTurrent_degree()){fire_timestamp = unix_time_stamp();}
     position get_Bullet_pos();
-
+    Collision *co(){return collision;}
 private:
     struct position origin_pos;
     double degree;
     Collision col;
     long long fire_timestamp;
+    enum  Ai_Type type;
+    Collision* collision;
 };
 
 
