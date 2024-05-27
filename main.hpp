@@ -1,23 +1,24 @@
 //
 // Created by rushy on 24-5-27.
 //
+#include <QDebug>
+#include <QCoreApplication>
+#include <QGuiApplication>
+#include <QApplication>
 #include "main.moc"
 #include "include/base.hpp"
 #include "src/grap.hpp"
 #ifndef QT_MAIN_HPP
 #define QT_MAIN_HPP
-class Renderer : public QObject {
-Q_OBJECT
-private:
-    Tank_info local;
-public:
-    void render();
-    // ... 其他代码 ...
 
-signals:
-    void updateNeeded(QGraphicsItem* item, double x, double y, double angle);
-};
-
+extern Tank_info local;
+extern int remote_amount;
+extern tank_data* churchill_data;
+extern tank_data* tiger_data;
+extern tank_data* is2_data;
+extern tank_data* t34_85_data;
+extern tank_data* sherman_data;
+extern tank_draw_data* draw_data;
 
 
 class MainWindow : public QMainWindow
@@ -28,6 +29,8 @@ public:
     {
         scene = new QGraphicsScene(this);
         view = new QGraphicsView(scene, this);
+        view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
         // 设置视图的大小和位置
         view->setGeometry(0, 0, SCREEN_LENGTH, SCREEN_WIDTH);
@@ -66,6 +69,7 @@ public slots:
         // 在这里更新你的 item 的位置和角度
         if (item) {
             item->setPos(x, y);
+            item->setTransformOriginPoint(item->boundingRect().width() / 2, item->boundingRect().height() / 2);
             item->setRotation(angle);
         }
     }
@@ -78,4 +82,96 @@ private:
     QGraphicsScene *scene;
     QGraphicsView *view;
 };
+
+extern MainWindow* _window;
+
+class Renderer : public QObject {
+Q_OBJECT
+public:
+    Renderer() {
+        QPixmap map_pix("../source/map1.png");
+        map_item = new QGraphicsPixmapItem(map_pix);
+        _window->getScene()->addItem(map_item);
+        timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, this, &Renderer::render);
+        timer->start(33);
+    }
+
+    ~Renderer() {
+        delete map_item;
+        delete timer;
+    }
+signals:
+    void updateNeeded(QGraphicsItem* item, double x, double y, double angle);
+    void updateAllGui();
+
+public slots:
+
+    void render() {
+        // while (true) {
+            tank = chan<Tank_info>("local").receive();
+            
+
+            if (tank_map.find(tank.id) == tank_map.end()) {
+                draw_data = chan<tank_draw_data*>("local").receive_safe();
+                tank_map[tank.id] = draw_data;
+            } else {
+                draw_data = tank_map[tank.id];
+            }
+
+            position temp(0, 0);
+            temp = position(SCREEN_LENGTH/2, SCREEN_WIDTH/2) - tank.pos;
+            map_item->setPos(temp.x, temp.y);
+            // 发送信号
+            emit updateNeeded(draw_data->body_item, map_convert_screen(tank.pos, tank.pos).x, map_convert_screen(tank.pos, tank.pos).y, tank.head_degree);
+            emit updateNeeded(draw_data->turret_item, map_convert_screen(tank.pos, tank.pos).x + draw_data->offset * cos(
+                    Radians(tank.head_degree)), map_convert_screen(tank.pos, tank.pos).y + draw_data->offset * sin(
+                    Radians(tank.head_degree)), tank.turret_degree);
+        // }
+
+    }
+
+private:
+    Tank_info tank;
+    QGraphicsPixmapItem* map_item;
+    QTimer* timer;
+    std::map<int, tank_draw_data*> tank_map;
+};
+
+
+// class Renderer : public QObject {
+// Q_OBJECT
+// public:
+//     Renderer() {
+//         QPixmap map_pix("../source/map1.png");
+//         map_item = new QGraphicsPixmapItem(map_pix);
+//         _window->getScene()->addItem(map_item);
+//         timer = new QTimer(this);
+//         connect(timer, &QTimer::timeout, this, &Renderer::render);
+//         timer->start(33);
+//     }
+
+//     ~Renderer() {
+//         delete map_item;
+//         delete timer;
+//     }
+
+// public slots:
+//     void render() {
+//         local = chan<Tank_info>("local").receive();
+//         tank_draw_data* local_draw = chan<tank_draw_data*> ("local").receive_safe();
+//         position temp(0, 0);
+//         temp = position(SCREEN_LENGTH/2, SCREEN_WIDTH/2) - local.pos;
+//         map_item->setPos(temp.x, temp.y);
+//         // 发送信号
+//         emit updateNeeded(local_draw->body_item, map_convert_screen(local.pos, local.pos).x, map_convert_screen(local.pos, local.pos).y, local.head_degree);
+//         emit updateNeeded(local_draw->body_item, map_convert_screen(local.pos, local.pos).x + local_draw->offset * cos(
+//                 Radians(local.head_degree)), map_convert_screen(local.pos, local.pos).y + local_draw->offset * sin(
+//                 Radians(local.head_degree)), local.turret_degree);
+//     }
+
+// private:
+//     QGraphicsPixmapItem* map_item;
+//     QTimer* timer;
+// };
 #endif //QT_MAIN_HPP
