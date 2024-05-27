@@ -9,12 +9,12 @@
 
 
 #include <cmath>
-//#include <graphics.h>
-//#include <easyx.h>
-#include "../HiEasyX.h"
 #include <random>
 #include <thread>
 #include <mutex>
+#include <QCoreApplication>
+#include <QtCore>
+#include <QtGui/qpainter.h>
 
 
 #define Radians(x) ((x)*PI/180.0)
@@ -101,19 +101,19 @@ enum tank_type{churchill,is2,sherman,t34_85,tiger};
 
 struct tank_data
 {
+    QPixmap body;
+    QPixmap turret;
     int offset;
     int body_width;
     int turret_width;
-    hiex::Canvas body;
-    hiex::Canvas turret;
     tank_data(enum tank_type type){
         switch (type) {
             case churchill:
                 body_width=150;
                 turret_width=150;
                 offset=5;
-                body.Load_Image_Alpha("../source/tank/churchill_body.png");
-                turret.Load_Image_Alpha("../source/tank/churchill_turret.png");
+                body.load("../source/tank/churchill_body.png");
+                turret.load("../source/tank/churchill_turret.png");
                 //test
 
 
@@ -141,29 +141,29 @@ struct tank_data
                 body_width=150;
                 turret_width=240;
                 offset=15;
-                body.Load_Image_Alpha("../source/tank/is2_body.png");
-                turret.Load_Image_Alpha("../source/tank/is2_turret.png");
+                body.load("../source/tank/is2_body.png");
+                turret.load("../source/tank/is2_turret.png");
                 break;
             case sherman:
                 body_width=150;
                 turret_width=150;
                 offset=0;
-                body.Load_Image_Alpha("../source/tank/sherman_body.png");
-                turret.Load_Image_Alpha("../source/tank/sherman_turret.png");
+                body.load("../source/tank/sherman_body.png");
+                turret.load("../source/tank/sherman_turret.png");
                 break;
             case t34_85:
                 body_width=150;
                 turret_width=240;
                 offset=18;
-                body.Load_Image_Alpha("../source/tank/t34_85_body.png");
-                turret.Load_Image_Alpha("../source/tank/t34_85_turret.png");
+                body.load("../source/tank/t34_85_body.png");
+                turret.load("../source/tank/t34_85_turret.png");
                 break;
             case tiger:
                 body_width=150;
                 turret_width=240;
                 offset=0;
-                body.Load_Image_Alpha("../source/tank/tiger_body.png");
-                turret.Load_Image_Alpha("../source/tank/tiger_turret.png");
+                body.load("../source/tank/tiger_body.png");
+                turret.load("../source/tank/tiger_turret.png");
                 break;
         }
     };
