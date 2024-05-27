@@ -1,6 +1,6 @@
 
 //#include <graphics.h>
-#include "../HiEasyX.h"
+
 #include <functional>
 #include <string>
 #include <vector>

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(qt)
 set(CMAKE_PREFIX_PATH "C:/Qt/6.7.1/mingw_64/lib/cmake")
+set(CMAKE_INCLUDE_PATH "C:/Qt/6.7.1/mingw_64/include/QtGui")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -9,6 +10,7 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 COMPONENTS
         Core
+        Widgets
         REQUIRED)
 
 add_executable(qt main.cpp

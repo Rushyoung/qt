@@ -11,7 +11,7 @@
 #include <cmath>
 //#include <graphics.h>
 //#include <easyx.h>
-#include "../HiEasyX.h"
+
 #include <random>
 #include <thread>
 #include <mutex>
@@ -25,7 +25,7 @@
 #define FRAME_TIME 12
 #define BULLET_LENGTH 10
 int random(int min, int max);
-extern MOUSEMSG _mouse;
+
 struct position{
     int x;
     int y;

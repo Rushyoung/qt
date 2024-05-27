@@ -4,8 +4,9 @@
 #include "base.hpp"
 #include "basetype.hpp"
 #include "chanel.hpp"
+#include <QCoreApplication>
 //#include <graphics.h>
-#include "../HiEasyX.h"
+
 #include <vector>
 #ifndef TANK_BATTLE_GRAP_HPP
 #define TANK_BATTLE_GRAP_HPP

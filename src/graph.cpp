@@ -1,7 +1,10 @@
 //
 // Created by rushy on 24-5-24.
 //
+#include <QtCore>
+#include <QtGui/qpainter.h>
 #include "../include/grap.hpp"
+
 /*
  * @img:源图像
  * @angle:角度（弧度）
@@ -108,22 +111,40 @@ position map_convert_screen(position& base, position& origin){
     return (dst + (origin - base));
 }
 
- void draw_tank(tank_draw_data* buffer, double head_degree, double turret_degree, int center_x, int center_y,  int turretOffsetX, int turretOffsetY) {
-     // 计算新的炮塔偏移量
- //    cout << "ddd" << head_degree << std::endl;
-     int newOffsetX = turretOffsetX * cos(head_degree) - turretOffsetY * sin(head_degree);
- //    int newOffsetY = turretOffsetX * sin(head_degree) + turretOffsetY * cos(head_degree);
-
-     // 将 body 和 turret 绘制到屏幕上
 
 
-
-
-
-     //easyx ruined
-     rotate_draw(&buffer->body_info, head_degree, center_x, center_y);
-     rotate_draw(&buffer->turret_info,  turret_degree, center_x+newOffsetX, center_y);
- }
+void draw_tank(QPixmap* body, QPixmap* turret, double head_degree, double turret_degree, int center_x, int center_y, int turretOffsetX, int turretOffsetY = 0) {
+    QPainter painter;
+    // 计算新的偏移量
+    int newOffsetX = turretOffsetX * cos(qDegreesToRadians(head_degree)) - turretOffsetY * sin(qDegreesToRadians(head_degree));
+    int newOffsetY = turretOffsetX * sin(qDegreesToRadians(head_degree)) + turretOffsetY * cos(qDegreesToRadians(head_degree));
+    // 旋转并绘制坦克车身
+    painter.translate(center_x, center_y);
+    painter.rotate(-head_degree);
+    painter.drawPixmap(-body->width() / 2, -body->height() / 2, *body);
+    painter.resetTransform();
+    // 旋转并绘制炮塔
+    painter.translate(center_x + newOffsetX, center_y + newOffsetY);
+    painter.rotate(-turret_degree);
+    painter.drawPixmap(-turret->width() / 2, -turret->height() / 2, *turret);
+    painter.resetTransform();
+}
+// void draw_tank(tank_draw_data* buffer, double head_degree, double turret_degree, int center_x, int center_y,  int turretOffsetX, int turretOffsetY) {
+//     // 计算新的炮塔偏移量
+// //    cout << "ddd" << head_degree << std::endl;
+//     int newOffsetX = turretOffsetX * cos(head_degree) - turretOffsetY * sin(head_degree);
+// //    int newOffsetY = turretOffsetX * sin(head_degree) + turretOffsetY * cos(head_degree);
+//
+//     // 将 body 和 turret 绘制到屏幕上
+//
+//
+//
+//
+//
+//     //easyx ruined
+//     rotate_draw(&buffer->body_info, head_degree, center_x, center_y);
+//     rotate_draw(&buffer->turret_info,  turret_degree, center_x+newOffsetX, center_y);
+// }
 
 
 //void draw_tank(tank_draw_data* buffer, double head_degree, double turret_degree, int center_x, int center_y,  int turretOffsetX, int turretOffsetY) {
@@ -147,4 +168,5 @@ void tank_turret(IMAGE* original, IMAGE* body, IMAGE* turret,
     getimage(turret, turret_pos.x, turret_pos.y, turretWidth, turretHeight);
     SetWorkingImage(NULL);
 }
+
 
