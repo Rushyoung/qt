@@ -11,7 +11,7 @@
 #define FOR_TURN_CRITICAL_VALUE 8.0
 #define FIRST_DECISION 5
 
-std::vector<Bullet> bullets;
+extern std::vector<Bullet> bullets;
 
 int whether_first=0;//0为第一次，1为后续
 
@@ -184,8 +184,9 @@ position Bullet::get_Bullet_pos() {
 
 void baseTank::fire() {
     while(true){
+        //TODO:idk what
         if(GetAsyncKeyState(VK_SPACE)&0x8000){
-            bullets.emplace_back(this);
+            bullets.emplace_back(std::make_shared<Bullet>(this));
         }
     }
 }
@@ -253,6 +254,7 @@ void Tank_ai::control() {
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
             if(bullet.co()->is_coincide(this->col)){
                 this->broken();
+                bullet.enable = false;
             }
         }
     }

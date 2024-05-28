@@ -20,6 +20,9 @@
 //extern int ai_amount;
 extern bool is_host;
 extern int remote_amount;
+extern QPixmap* _bullet_draw;
+extern int bullet_id;
+//extern MainWindow* _window;
 
 enum Ai_Type{
     Local,
@@ -119,11 +122,18 @@ public:
 
 class Bullet {
 public:
-    Bullet(baseTank* tank): origin_pos(tank->getPos()), degree(tank->getDegree()),
-                            col(tank->getX() + tank->getLength() * cos(Radians(tank->getTurrent_degree())),
+    int id;
+    bool enable;
+    QGraphicsPixmapItem bullet_item;
+    Bullet(std::shared_ptr<Bullet> tank): origin_pos(tank->getPos()), degree(tank->getDegree()),
+                                          col(tank->getX() + tank->getLength() * cos(Radians(tank->getTurrent_degree())),
         tank->getY() + tank->getLength() * sin(Radians(tank->getTurrent_degree())),
         BULLET_LENGTH,
-        tank->getTurrent_degree()){fire_timestamp = unix_time_stamp();}
+        tank->getTurrent_degree()),
+                                          bullet_item(*_bullet_draw),
+                                          enable(true)
+        //TODO:add bullet
+        {fire_timestamp = unix_time_stamp();id = bullet_id++;}
     position get_Bullet_pos();
     Collision *co(){return collision;}
 private:

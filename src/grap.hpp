@@ -5,7 +5,7 @@
 #include "../include/base.hpp"
 #include "../include/basetype.hpp"
 #include "../include/chanel.hpp"
-#include "D:/code/qt/cmake-build-debug/qt_autogen/include/main.moc"
+//#include "D:/code/qt/cmake-build-debug/qt_autogen/include/main.moc"
 #include <QCoreApplication>
 //#include <graphics.h>
 

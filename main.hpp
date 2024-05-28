@@ -20,7 +20,7 @@ extern tank_data* t34_85_data;
 extern tank_data* sherman_data;
 extern tank_draw_data* draw_data;
 extern tank_draw_data* draw_data_ai;
-
+std::vector<std::shared_ptr<Bullet>> bullets;
 class MainWindow : public QMainWindow
 {
 Q_OBJECT
@@ -58,6 +58,9 @@ public:
     void addTank(tank_draw_data* drawData) {
         scene->addItem(drawData->body_item);
         scene->addItem(drawData->turret_item);
+    }
+    void addBullet(QGraphicsPixmapItem* item){
+        scene->addItem(item);
     }
     ~MainWindow(){
         delete scene;
@@ -123,17 +126,31 @@ public slots:
             position temp(0, 0);
             temp = position(SCREEN_LENGTH/2, SCREEN_WIDTH/2) - tank.pos;
             map_item->setPos(temp.x, temp.y);
+            std::cerr << "map" << temp.x << std::endl;
+
             // 发送信号
             std::cerr << "local " << map_convert_screen(tank.pos, tank.pos).x << std::endl;
             emit updateNeeded(draw_data->body_item, map_convert_screen(tank.pos, tank.pos).x, map_convert_screen(tank.pos, tank.pos).y, tank.head_degree);
             emit updateNeeded(draw_data->turret_item, map_convert_screen(tank.pos, tank.pos).x + draw_data->offset * cos(
                     Radians(tank.head_degree)), map_convert_screen(tank.pos, tank.pos).y + draw_data->offset * sin(
                     Radians(tank.head_degree)), tank.turret_degree);
+
+
             std::cerr << "ai " << map_convert_screen(tank_ai.pos, tank.pos).x << std::endl;
             emit updateNeeded(draw_data_ai->body_item, map_convert_screen(tank_ai.pos, tank.pos).x, map_convert_screen(tank_ai.pos, tank.pos).y, tank_ai.head_degree);
             emit updateNeeded(draw_data_ai->turret_item, map_convert_screen(tank_ai.pos, tank.pos).x + draw_data_ai->offset * cos(
                     Radians(tank_ai.head_degree)), map_convert_screen(tank_ai.pos, tank.pos).y + draw_data_ai->offset * sin(
                     Radians(tank_ai.head_degree)), tank_ai.turret_degree);
+
+
+            for(auto it = bullets.begin(); it != bullets.end(); /* no increment here */) {
+                if((*it)->enable) {
+                    emit updateNeeded(&(*it)->bullet_item, (*it)->get_Bullet_pos().x, (*it)->get_Bullet_pos().y, 0.0);
+                    ++it; // only increment here
+                } else {
+                    it = bullets.erase(it); // erase returns the iterator to the next element
+                }
+            }
         // }
     }
 
