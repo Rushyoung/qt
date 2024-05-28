@@ -5,7 +5,7 @@
 #ifndef TANK_BATTLE_BASETYPE_HPP
 #define TANK_BATTLE_BASETYPE_HPP
 
-#include <propidl.h>
+//#include <propidl.h>
 
 
 #include <cmath>
@@ -15,6 +15,10 @@
 #include <QCoreApplication>
 #include <QtCore>
 #include <QtGui/qpainter.h>
+#include <QtWidgets/qgraphicsview.h>
+#include <QtWidgets/qgraphicsitem.h>
+//#include <QGraphicsItem>
+//#include <QGraphicsPixmapItem>
 
 
 #define Radians(x) ((x)*PI/180.0)
@@ -25,7 +29,7 @@
 #define FRAME_TIME 12
 #define BULLET_LENGTH 10
 int random(int min, int max);
-extern MOUSEMSG _mouse;
+
 struct position{
     int x;
     int y;
@@ -41,12 +45,11 @@ struct position{
 };
 double distance(const position& a, const position& b);
 
-struct draw_buffer{
-    double degree_now;
-    hiex::Canvas* dst;
-    hiex::ImageBlock* block;
-    draw_buffer(hiex::Canvas* dst, hiex::ImageBlock* block): dst(dst), block((block)), degree_now(0.0){}
-};
+//struct draw_buffer{
+//    double degree_now;
+//    QGraphicsPixmapItem* dst;
+//    draw_buffer(QGraphicsPixmapItem* dst): dst(dst), degree_now(0.0){}
+//};
 
 /*
  * @brief:需要先给imageblock分配空间
@@ -54,32 +57,34 @@ struct draw_buffer{
 struct tank_draw_data{
     int id;
     int offset;
-    hiex::Canvas body;
-    hiex::Canvas turret;
-    hiex::ImageBlock body_block;
-    hiex::ImageBlock turret_block;
-    draw_buffer body_info;
-    draw_buffer turret_info;
-    tank_draw_data(hiex::Canvas* _body, hiex::Canvas* _turret, hiex::Layer* body_layer, hiex::Layer* turret_layer, int offset):
+    QPixmap body;
+    QPixmap turret;
+    QGraphicsPixmapItem* body_item;
+    QGraphicsPixmapItem* turret_item;
+//    draw_buffer body_info;
+//    draw_buffer turret_info;
+    QGraphicsScene* scene;
+    tank_draw_data(QPixmap _body, QPixmap _turret, int offset):
             body(_body), turret(_turret),
-            body_block(&body), turret_block(&turret),
-            body_info(&body, &body_block), turret_info(&turret, &turret_block),
+            body_item(new QGraphicsPixmapItem(body)), turret_item(new QGraphicsPixmapItem(turret)),
+//            body_info(&body, body_item), turret_info(&turret, turret_item),
             offset(offset){
-        body_layer->push_back(&body_block);
-        turret_layer->push_back(&turret_block);
+//        scene->addItem(body_item);
+//        scene->addItem(turret_item);
     }
 };
 
 struct Tank_info{
     Tank_info(Tank_info const &info): pos(info.pos), head_degree(info.head_degree), turret_degree(info.turret_degree), enable(info.enable){}
     std::mutex mtx;  // 用于保护这个结构体的互斥锁
+    int id;
     struct position pos;
     double head_degree;
     double turret_degree;
     bool enable;
 
-    Tank_info(): pos(-1, -1){enable = false;}
-    Tank_info(struct position pos, double head_degree, double turret_degree, bool enable): pos(pos), head_degree(head_degree), turret_degree(turret_degree), enable(enable){}
+    Tank_info(): pos(-1, -1), head_degree(0.0), turret_degree(0.0){enable = false;}
+    Tank_info(int id, struct position pos, double head_degree, double turret_degree, bool enable):id(id) , pos(pos), head_degree(head_degree), turret_degree(turret_degree), enable(enable){}
     Tank_info& operator=(const Tank_info& other){
         if(other.pos.x == -1 || other.pos.y == -1){
             return *this;
@@ -106,6 +111,7 @@ struct tank_data
     int offset;
     int body_width;
     int turret_width;
+    tank_data(){}
     tank_data(enum tank_type type){
         switch (type) {
             case churchill:

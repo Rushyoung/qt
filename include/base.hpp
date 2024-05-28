@@ -20,6 +20,9 @@
 //extern int ai_amount;
 extern bool is_host;
 extern int remote_amount;
+extern QPixmap* _bullet_draw;
+extern int bullet_id;
+//extern MainWindow* _window;
 
 enum Ai_Type{
     Local,
@@ -82,6 +85,7 @@ public:
     struct position getPos(){return pos;}
     double getDegree(){return head_degree;}
     double getTurrent_degree(){return turret_degree;}
+    void fire();
     void broken();
 protected:
     tank_draw_data* draw;
@@ -99,7 +103,7 @@ protected:
 
 class Tank_local : public baseTank{
 public:
-    Tank_local(int x, int y, int length, int id, double speed, tank_type t): baseTank(x, y, length, id, speed, Local, t), speed(speed){chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));}
+    Tank_local(int x, int y, int length, int id, double speed, tank_type t): baseTank(x, y, length, id, speed, Local, t), speed(speed){chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));}
     void control() override;
 protected:
     double speed;
@@ -118,18 +122,27 @@ public:
 
 class Bullet {
 public:
-    Bullet(baseTank* tank): origin_pos(tank->getPos()), degree(tank->getDegree()),
-                            col(tank->getX() + tank->getLength() * cos(Radians(tank->getTurrent_degree())),
+    int id;
+    bool enable;
+    QGraphicsPixmapItem bullet_item;
+    Bullet(std::shared_ptr<Bullet> tank): origin_pos(tank->getPos()), degree(tank->getDegree()),
+                                          col(tank->getX() + tank->getLength() * cos(Radians(tank->getTurrent_degree())),
         tank->getY() + tank->getLength() * sin(Radians(tank->getTurrent_degree())),
         BULLET_LENGTH,
-        tank->getTurrent_degree()){fire_timestamp = unix_time_stamp();}
+        tank->getTurrent_degree()),
+                                          bullet_item(*_bullet_draw),
+                                          enable(true)
+        //TODO:add bullet
+        {fire_timestamp = unix_time_stamp();id = bullet_id++;}
     position get_Bullet_pos();
-
+    Collision *co(){return collision;}
 private:
     struct position origin_pos;
     double degree;
     Collision col;
     long long fire_timestamp;
+    enum  Ai_Type type;
+    Collision* collision;
 };
 
 

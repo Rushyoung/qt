@@ -1,14 +1,17 @@
 //
 // Created by 小小喵姬 on 24-5-13.
 //
-#include "../include/base.hpp"
-#include "../include/grap.hpp"
-#include <iostream>
 
-#define ROTATE_SPEED PI/4
+#include "../include/base.hpp"
+#include "grap.hpp"
+//#include <iostream>
+
+#define ROTATE_SPEED PI/100
 #define FOR_STRAIGHT_CRITICAL_VALUE 6.0
 #define FOR_TURN_CRITICAL_VALUE 8.0
 #define FIRST_DECISION 5
+
+extern std::vector<Bullet> bullets;
 
 int whether_first=0;//0为第一次，1为后续
 
@@ -66,7 +69,8 @@ int probability_judge(int for_con){
 
 
 void Tank_local::control() {
-    chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));
+    std::cerr << "local";
+    chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
     chan<tank_draw_data*> ("local").send(draw);
     while(true){
         if(!enable){return;}//destruct & broken
@@ -94,7 +98,8 @@ void Tank_local::control() {
                 pos.y + speed * sin(radian_head) <= 0)){
                 pos.x += speed * cos(radian_head);
                 pos.y += speed * sin(radian_head);
-//                cout << "+" << pos.x << std::endl;
+//                cout << "local:" << pos.x ;
+//                cout << " local:" << pos.y << std::endl;
                 changed = true;
             }
         }
@@ -106,11 +111,11 @@ void Tank_local::control() {
                 pos.x - speed * cos(radian_head) <= 0 ||
                 pos.y - speed * sin(radian_head) >= MAP_Y ||
                 pos.y - speed * sin(radian_head) <= 0)){
-
                 pos.x -= speed * cos(radian_head);
                 pos.y -= speed * sin(radian_head);
                 changed = true;
-//                cout << "-" << pos.x << std::endl;
+//                cout << "local:" << pos.x ;
+//                cout << " local:" << pos.y << std::endl;
             }
         }
         //rotate-
@@ -149,17 +154,27 @@ void Tank_local::control() {
             changed = true;
         }
         //send
-
-            chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));
-
+        col.update_pos(pos.x, pos.y);
+        if(changed){
+            chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
+        }
 //        cout << "x" << pos.x << "y" << pos.y << "degree" << head_degree << std::endl;
         //sleep
         std::this_thread::sleep_for(millisecond(FRAME_TIME));
+
+
+        for (auto& bullet : bullets) { // 遍历并更新所有子弹
+            if(bullet.co()->is_coincide(this->col)){
+                this->broken();
+            }
+        }
+
+//        this->fire();
     }
 }
 
 void baseTank::broken() {
-
+    enable=false;
 }
 
 position Bullet::get_Bullet_pos() {
@@ -167,8 +182,20 @@ position Bullet::get_Bullet_pos() {
                     origin_pos.y + BULLET_SPEED * fire_timestamp * sin(Radians(degree)));
 }
 
+void baseTank::fire() {
+    while(true){
+        //TODO:idk what
+        if(GetAsyncKeyState(VK_SPACE)&0x8000){
+            bullets.emplace_back(std::make_shared<Bullet>(this));
+        }
+    }
+}
+
 
 void Tank_ai::control() {
+    std::cerr << "ai";
+    chan<tank_draw_data*> ("ai2").send(draw);
+    chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
     bool changed=false;
     while(true) {
 
@@ -185,12 +212,14 @@ void Tank_ai::control() {
             } else {
                 pos.x += speed * cos(Radians(radian_head));
                 pos.y += speed * sin(Radians(radian_head));
+//                cout << "AI:" << pos.x ;
+//                cout << " AI:" << pos.y << std::endl;
                 changed = true;
             }
         }
         //rotate+，顺时针旋转
         else if(move_judge==1){
-            head_degree += ROTATE_SPEED;
+            head_degree += Degree(ROTATE_SPEED);
             while (head_degree >= 360) {
                 head_degree -= 360;
             }
@@ -198,7 +227,7 @@ void Tank_ai::control() {
         }
         //rotate-，逆时针旋转
         else{
-            head_degree -= ROTATE_SPEED;
+            head_degree -= Degree(ROTATE_SPEED);
             while (head_degree < 0) {
                 head_degree += 360;
             }
@@ -213,13 +242,20 @@ void Tank_ai::control() {
             changed = true;
         }
 
-
+        col.update_pos(pos.x, pos.y);
 
         //send
         if(changed){
-            chan<Tank_info>("local").send(Tank_info(pos, head_degree, turret_degree, true));
+            chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
         //sleep
         std::this_thread::sleep_for(millisecond(FRAME_TIME));
+
+        for (auto& bullet : bullets) { // 遍历并更新所有子弹
+            if(bullet.co()->is_coincide(this->col)){
+                this->broken();
+                bullet.enable = false;
+            }
+        }
     }
 }
