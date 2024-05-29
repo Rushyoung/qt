@@ -230,22 +230,24 @@ void Tank_ai::control() {
         //move forward
         if(move_judge==0){
             double radian_head= Radians(head_degree);
-            if (pos.x + speed * cos(Radians(radian_head)) >= MAP_X ||
-                pos.x + speed * cos(Radians(radian_head)) <= 0 ||
-                pos.y + speed * sin(Radians(radian_head)) >= MAP_Y ||
-                pos.y + speed * sin(Radians(radian_head)) <= 0) {
+            cout<<"radian_head: "<<radian_head<<std::endl;
+            if (pos.x + speed * cos((radian_head)) >= MAP_X ||
+                pos.x + speed * cos((radian_head)) <= 0 ||
+                pos.y + speed * sin((radian_head)) >= MAP_Y ||
+                pos.y + speed * sin((radian_head)) <= 0) {
                 continue;
             } else {
-                pos.x += speed * cos(Radians(radian_head));
-                pos.y += speed * sin(Radians(radian_head));
-//                cout << "AI:" << pos.x ;
-//                cout << " AI:" << pos.y << std::endl;
+                pos.x +=5* speed * cos((radian_head));
+                pos.y +=5* speed * sin((radian_head));
+                cout << "AI:" << pos.x ;
+                cout << " AI:" << pos.y << std::endl;
                 changed = true;
             }
+            cout<<cos(Radians(radian_head))<<"    "<<sin(Radians(radian_head))<<std::endl;
         }
         //rotate+，顺时针旋转
         else if(move_judge==1){
-            head_degree += Degree(90);
+            head_degree += Degree(ROTATE_SPEED*8);
             while (head_degree >= 360) {
                 head_degree -= 360;
             }
@@ -253,13 +255,13 @@ void Tank_ai::control() {
         }
         //rotate-，逆时针旋转
         else{
-            head_degree -= Degree(90);
+            head_degree -= Degree(ROTATE_SPEED*8);
             while (head_degree < 0) {
                 head_degree += 360;
             }
             changed = true;
         }
-
+         cout<<"degree: "<<head_degree<<std::endl;
 
         //AI与主机玩家同屏幕的时候，炮塔转向自动攻击
         if(abs((pos-local.pos).x)<=SCREEN_LENGTH/2 && abs((pos-local.pos).y)<=SCREEN_WIDTH/2){
@@ -275,7 +277,7 @@ void Tank_ai::control() {
             chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
         //sleep
-        std::this_thread::sleep_for(millisecond(300));
+        std::this_thread::sleep_for(millisecond(100));
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
             if(bullet->co().is_coincide(this->col)){
