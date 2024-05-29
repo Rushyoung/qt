@@ -132,14 +132,25 @@ public:
     int id;
     bool enable;
     QGraphicsPixmapItem bullet_item;
-    Bullet(baseTank* tank): origin_pos(tank->getPos()+position(100*cos(Radians(tank->getDegree())),100*sin(Radians(tank->getDegree())))), degree(tank->getDegree()),
+/*    Bullet(baseTank* tank): origin_pos(tank->getPos()+position(100*cos(Radians(tank->getTurrent_degree())),100*sin(Radians(tank->getTurrent_degree())))), degree(tank->getTurrent_degree()),
                                           col(tank->getX() + tank->getLength() * cos(Radians(tank->getTurrent_degree())),
         tank->getY() + tank->getLength() * sin(Radians(tank->getTurrent_degree())),
         BULLET_LENGTH,
         tank->getTurrent_degree()),
                                           bullet_item(*_bullet_draw),
                                           enable(true)
-        {fire_timestamp = unix_time_stamp();id = bullet_id++;Addbullet();}
+        {fire_timestamp = unix_time_stamp();id = bullet_id++;Addbullet();}*/
+
+    Bullet(baseTank* tank): origin_pos(tank->getPos()), degree(tank->getTurrent_degree()),
+                            col(tank->getX() + tank->getLength() * cos(Radians(tank->getTurrent_degree())),
+                                tank->getY() + tank->getLength() * sin(Radians(tank->getTurrent_degree())),
+                                BULLET_LENGTH,
+                                tank->getTurrent_degree()),
+                            bullet_item(*_bullet_draw),
+                            enable(true)
+    {fire_timestamp = unix_time_stamp();id = bullet_id++;Addbullet();}
+
+
     position get_Bullet_pos();
     void move();
     void Addbullet();

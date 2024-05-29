@@ -174,11 +174,14 @@ void Tank_local::control() {
 //        cout << "x" << pos.x << "y" << pos.y << "degree" << head_degree << std::endl;
         //sleep
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
+            if(bullet == NULL){
+                continue;
+            }
             bullet->move();
-            if(bullet->co().is_coincide(this->col)){
+/*            if(bullet->co().is_coincide(this->col)){
                 this->broken();
                 bullet->enable= false;
-            }
+            }*/
         }
 
         std::this_thread::sleep_for(millisecond(FRAME_TIME));
@@ -251,7 +254,7 @@ void Tank_ai::control() {
                 cout << " AI:" << pos.y << std::endl;
                 changed = true;
             }
-            cout<<cos(Radians(radian_head))<<"    "<<sin(Radians(radian_head))<<std::endl;
+//            cout<<cos(Radians(radian_head))<<"    "<<sin(Radians(radian_head))<<std::endl;
         }
         //rotate+，顺时针旋转
         else if(move_judge==1){
@@ -285,7 +288,7 @@ void Tank_ai::control() {
             chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
         //sleep
-
+        std::this_thread::sleep_for(millisecond(200));
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
             if(bullet->co().is_coincide(this->col)){
@@ -295,6 +298,7 @@ void Tank_ai::control() {
                 return;
             }
         }
+        std::cerr << "aippp" << pos.x << std::endl;
 
 
         std::this_thread::sleep_for(millisecond(200));

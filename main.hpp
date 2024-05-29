@@ -72,6 +72,7 @@ public slots:
     static void updateGui(QGraphicsItem* item, double x, double y, double angle) {
         // 在这里更新你的 item 的位置和角度
         if (item) {
+            if(x > 2700|| y > 2700 || x < -3000 || y < -3000){ return;}
             item->setPos(x, y);
             item->setTransformOriginPoint(item->boundingRect().width() / 2, item->boundingRect().height() / 2);
             item->setRotation(angle);
@@ -81,6 +82,7 @@ public slots:
         // 在这里更新视图
         view->update();
         int itemCount = scene->items().size();
+        view->viewport()->update();
         std::cerr << "Number of items in the scene: " << itemCount;
     }
 
@@ -147,24 +149,30 @@ public slots:
 
 //            std::cerr << "ai " << map_convert_screen(tank_ai.pos, tank.pos).x << std::endl;
 //            std::cerr << "aip " << tank_ai.pos.x << std::endl;
-            emit updateNeeded(draw_data_ai->body_item, -map_convert_screen(tank_ai.pos, tank.pos).x, -map_convert_screen(tank_ai.pos, tank.pos).y, tank_ai.head_degree);
-            emit updateNeeded(draw_data_ai->turret_item, -(map_convert_screen(tank_ai.pos, tank.pos).x + draw_data_ai->offset * cos(
-                    Radians(tank_ai.head_degree))), -(map_convert_screen(tank_ai.pos, tank.pos).y + draw_data_ai->offset * sin(
+            emit updateNeeded(draw_data_ai->body_item, -map_convert_screen(tank_ai.pos, tank.pos).x+2000, -map_convert_screen(tank_ai.pos, tank.pos).y+1000, tank_ai.head_degree);
+            emit updateNeeded(draw_data_ai->turret_item, 2000-(map_convert_screen(tank_ai.pos, tank.pos).x + draw_data_ai->offset * cos(
+                    Radians(tank_ai.head_degree))), 1000-(map_convert_screen(tank_ai.pos, tank.pos).y + draw_data_ai->offset * sin(
                     Radians(tank_ai.head_degree))), tank_ai.turret_degree);
 
 
             for(auto it = bullets.begin(); it != bullets.end(); /* no increment here */) {
+                if(*it == NULL) {
+                    it = bullets.erase(it); // erase returns the iterator to the next element
+                    continue;
+                }
                 if((*it)->enable) {
                     std::cerr << "boom" << std::endl;
                     position temp = (*it)->get_Bullet_pos();
-//                    emit updateNeeded(&(*it)->bullet_item, temp.x, temp.y, 0.0);
-                    emit updateNeeded(&(*it)->bullet_item, 100, 100, 0.0);
+                    temp = map_convert_screen(temp, tank.pos);
+                    emit updateNeeded(&(*it)->bullet_item, MAP_X/2-temp.x + 640, MAP_Y/2-temp.y -120, 0.0);
                     ++it; // only increment here
+                    if(it == bullets.end()) {
+                        break;
+                    }
                 } else {
                     it = bullets.erase(it); // erase returns the iterator to the next element
                 }
             }
-
             emit updateAllGui();
         // }
     }

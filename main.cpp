@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
     sherman_data = &_sherman_data;
 
 
-    QPixmap bullet_draw("../source/tankmissile.gif");
+    QPixmap bullet_draw("../source/tankmissile.png");
     _bullet_draw = &bullet_draw;
 
     std::vector<std::unique_ptr<Tank_collection>> tanks;
@@ -167,7 +167,7 @@ Tank_collection* create_tank(tank_type t, int id, Ai_Type ai){
     }
     switch (ai) {
         case Local:
-            tank_class = new Tank_local(random(0, MAP_X), random(0, MAP_Y), data->body_width/2,id, 2, t);
+            tank_class = new Tank_local(random(0, MAP_X), random(0, MAP_Y), data->body_width/2,id, 4, t);
             return new Tank_collection(data, tank_class);
         case Ai:
             tank_class = new Tank_ai(random(0, MAP_X), random(0, MAP_Y), data->body_width/2,id, 2, t);
