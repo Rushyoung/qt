@@ -61,6 +61,7 @@ public:
     }
     void addBullet(QGraphicsPixmapItem* item){
         scene->addItem(item);
+        item->setZValue(4);
     }
     ~MainWindow(){
         delete scene;
@@ -156,12 +157,15 @@ public slots:
                 if((*it)->enable) {
                     std::cerr << "boom" << std::endl;
                     position temp = (*it)->get_Bullet_pos();
-                    emit updateNeeded(&(*it)->bullet_item, temp.x, temp.y, 0.0);
+//                    emit updateNeeded(&(*it)->bullet_item, temp.x, temp.y, 0.0);
+                    emit updateNeeded(&(*it)->bullet_item, 100, 100, 0.0);
                     ++it; // only increment here
                 } else {
                     it = bullets.erase(it); // erase returns the iterator to the next element
                 }
             }
+
+            emit updateAllGui();
         // }
     }
 

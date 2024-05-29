@@ -69,11 +69,12 @@ int probability_judge(int for_con){
 
 
 void Tank_local::control() {
-    std::cerr << "local";
+
     chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
     chan<tank_draw_data*> ("local").send(draw);
     while(true){
-        if(!enable){return;}//destruct & broken
+        std::cerr << "local alive" << std::endl;
+        if(!enable){chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));return;}//destruct & broken
         bool changed;
         changed = false;
 //        _mouse = GetMouseMsg();
@@ -157,20 +158,32 @@ void Tank_local::control() {
         }
         //send
         col.update_pos(pos.x, pos.y);
+        if(GetAsyncKeyState(VK_SPACE)&0x8000) {
+            if (fire_flag > 0) {
+                fire_flag++;
+                if (fire_flag > 25) {
+                    fire_flag = 0;
+                }
+            }else {
+                fire();
+            }
+        }
         if(changed){
             chan<Tank_info>("local").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
 //        cout << "x" << pos.x << "y" << pos.y << "degree" << head_degree << std::endl;
         //sleep
-        fire();
-        std::this_thread::sleep_for(millisecond(FRAME_TIME));
-
-
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
+            bullet->move();
             if(bullet->co().is_coincide(this->col)){
                 this->broken();
             }
         }
+
+        std::this_thread::sleep_for(millisecond(FRAME_TIME));
+
+
+        
 
 //        this->fire();
     }
@@ -195,19 +208,12 @@ void baseTank::fire() {
 
         //TODO:idk what
         //TODO:time delay
-        if(GetAsyncKeyState(VK_SPACE)&0x8000){
-            if(fire_flag > 0){
-                fire_flag++;
-                if(fire_flag > 100){
-                    fire_flag = 0;
-                }
-                return;
-            }
+
             std::cerr << "fire\n" << std::endl;
             bullets.emplace_back(std::make_shared<Bullet>(this));
 //            std::make_shared<Bullet>(this);
 
-        }
+
 
 }
 
