@@ -199,10 +199,10 @@ position Bullet::get_Bullet_pos() {
 }
 
 void Bullet::move(){
-    if(origin_pos.x += BULLET_SPEED * cos(Radians(degree))>=MAP_X||
-            origin_pos.x += BULLET_SPEED * cos(Radians(degree))<=0||
-            origin_pos.y += BULLET_SPEED * sin(Radians(degree))>=MAP_Y||
-            origin_pos.y += BULLET_SPEED * sin(Radians(degree))<=0)
+    if(origin_pos.x + BULLET_SPEED * cos(Radians(degree))>=MAP_X||
+            origin_pos.x + BULLET_SPEED * cos(Radians(degree))<=0||
+            origin_pos.y + BULLET_SPEED * sin(Radians(degree))>=MAP_Y||
+            origin_pos.y + BULLET_SPEED * sin(Radians(degree))<=0)
     {enable=false;}
     else {
         origin_pos.x += BULLET_SPEED * cos(Radians(degree));
@@ -285,13 +285,18 @@ void Tank_ai::control() {
             chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
         //sleep
-        std::this_thread::sleep_for(millisecond(200));
+
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
             if(bullet->co().is_coincide(this->col)){
                 this->broken();
                 bullet->enable = false;
+                chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
+                return;
             }
         }
+
+
+        std::this_thread::sleep_for(millisecond(200));
     }
 }
