@@ -16,7 +16,7 @@ MainWindow* _window;
 tank_draw_data* draw_data;
 tank_draw_data* draw_data_ai;
 QPixmap* _bullet_draw;
-
+std::vector<std::shared_ptr<Bullet>> bullets;
 int bullet_id = 0;
 
 //MainWindow* _window;
@@ -130,13 +130,13 @@ int main(int argc, char *argv[]) {
     t34_85_data = &_t34_85_data;
     sherman_data = &_sherman_data;
 
-    //TODO:filepath
-    QPixmap bullet_draw("path");
+
+    QPixmap bullet_draw("../source/tankmissile.gif");
     _bullet_draw = &bullet_draw;
 
     std::vector<std::unique_ptr<Tank_collection>> tanks;
-    tanks.push_back(std::unique_ptr<Tank_collection>(create_tank(sherman, 1, Local)));
-    tanks.push_back(std::unique_ptr<Tank_collection>(create_tank(tiger, 2, Ai)));
+    tanks.push_back(std::unique_ptr<Tank_collection>(create_tank(is2, 1, Local)));
+    tanks.push_back(std::unique_ptr<Tank_collection>(create_tank(sherman, 2, Ai)));
 
 
     window.show();

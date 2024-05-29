@@ -11,7 +11,7 @@
 #define FOR_TURN_CRITICAL_VALUE 8.0
 #define FIRST_DECISION 5
 
-std::vector<Bullet*> bullets;
+extern std::vector<std::shared_ptr<Bullet>> bullets;
 
 int whether_first=0;//0为第一次，1为后续
 
@@ -137,7 +137,8 @@ void Tank_local::control() {
 //            cout<< "degreeeeeeeee"<< head_degree<<std::endl;
             changed = true;
         }
-        if(GetAsyncKeyState(VK_RIGHT)&0x8000){
+//        if(GetAsyncKeyState(VK_RIGHT)&0x8000){
+        if(GetAsyncKeyState('K')&0x8000){
 //            std::cerr << "turn-" << std::endl;
             turret_degree -= Degree(ROTATE_SPEED);
             while (turret_degree < 0) {
@@ -145,7 +146,8 @@ void Tank_local::control() {
             }
             changed = true;
         }
-        if(GetAsyncKeyState(VK_LEFT)&0x8000){
+//        if(GetAsyncKeyState(VK_LEFT)&0x8000){
+        if(GetAsyncKeyState('K')&0x8000){
 //            std::cerr << "turn-" << std::endl;
             turret_degree += Degree(ROTATE_SPEED);
             while (turret_degree < 0) {
@@ -164,26 +166,14 @@ void Tank_local::control() {
 
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
-            cout<<"enter 1"<<std::endl;
-            if(bullet->co().is_coincide(this->col)){
-                cout<<"enter 2"<<std::endl;
+            if(bullet->co()->is_coincide(this->col)){
                 this->broken();
             }
         }
 
-        if(GetAsyncKeyState(VK_SPACE)&0x8000) {
-            cout<<"YES"<<std::endl;
-            this->fire();
-        }
+//        this->fire();
     }
 }
-
-void baseTank::fire() {
-    cout<<"fire"<<std::endl;
-    bullets.emplace_back(new Bullet(this));
-}
-
-
 
 void baseTank::broken() {
     enable=false;
@@ -192,6 +182,18 @@ void baseTank::broken() {
 position Bullet::get_Bullet_pos() {
     return position(origin_pos.x + BULLET_SPEED * fire_timestamp * cos(Radians(degree)),
                     origin_pos.y + BULLET_SPEED * fire_timestamp * sin(Radians(degree)));
+}
+
+void baseTank::fire() {
+    while(true){
+        //TODO:idk what
+        //TODO:time delay
+        if(GetAsyncKeyState(VK_SPACE)&0x8000){
+            bullets.emplace_back(std::make_shared<Bullet>(this));
+            std::make_shared<Bullet>(this);
+
+        }
+    }
 }
 
 
@@ -211,7 +213,7 @@ void Tank_ai::control() {
                 pos.x + speed * cos(Radians(radian_head)) <= 0 ||
                 pos.y + speed * sin(Radians(radian_head)) >= MAP_Y ||
                 pos.y + speed * sin(Radians(radian_head)) <= 0) {
-                return;
+                continue;
             } else {
                 pos.x += speed * cos(Radians(radian_head));
                 pos.y += speed * sin(Radians(radian_head));
@@ -255,9 +257,9 @@ void Tank_ai::control() {
         std::this_thread::sleep_for(millisecond(FRAME_TIME));
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
-            if(bullet->co().is_coincide(this->col)){
+            if(bullet->co()->is_coincide(this->col)){
                 this->broken();
-                bullet.enable = false;
+                bullet->enable = false;
             }
         }
     }

@@ -128,7 +128,7 @@ public:
     int id;
     bool enable;
     QGraphicsPixmapItem bullet_item;
-    Bullet(std::shared_ptr<Bullet> tank): origin_pos(tank->getPos()), degree(tank->getDegree()),
+    Bullet(baseTank* tank): origin_pos(tank->getPos()), degree(tank->getDegree()),
                                           col(tank->getX() + tank->getLength() * cos(Radians(tank->getTurrent_degree())),
         tank->getY() + tank->getLength() * sin(Radians(tank->getTurrent_degree())),
         BULLET_LENGTH,
