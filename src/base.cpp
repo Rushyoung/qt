@@ -241,7 +241,7 @@ void Tank_ai::control() {
         }
         //rotate+，顺时针旋转
         else if(move_judge==1){
-            head_degree += Degree(ROTATE_SPEED*8);
+            head_degree += Degree(ROTATE_SPEED*4);
             while (head_degree >= 360) {
                 head_degree -= 360;
             }
@@ -249,7 +249,7 @@ void Tank_ai::control() {
         }
         //rotate-，逆时针旋转
         else{
-            head_degree -= Degree(ROTATE_SPEED*8);
+            head_degree -= Degree(ROTATE_SPEED*4);
             while (head_degree < 0) {
                 head_degree += 360;
             }
@@ -271,7 +271,7 @@ void Tank_ai::control() {
             chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
         //sleep
-        std::this_thread::sleep_for(millisecond(100));
+        std::this_thread::sleep_for(millisecond(200));
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
             if(bullet->co().is_coincide(this->col)){
