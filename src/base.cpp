@@ -177,6 +177,7 @@ void Tank_local::control() {
             bullet->move();
             if(bullet->co().is_coincide(this->col)){
                 this->broken();
+                bullet->enable= false;
             }
         }
 
