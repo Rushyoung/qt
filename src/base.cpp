@@ -147,7 +147,7 @@ void Tank_local::control() {
             changed = true;
         }
 //        if(GetAsyncKeyState(VK_LEFT)&0x8000){
-        if(GetAsyncKeyState('K')&0x8000){
+        if(GetAsyncKeyState('J')&0x8000){
 //            std::cerr << "turn-" << std::endl;
             turret_degree += Degree(ROTATE_SPEED);
             while (turret_degree < 0) {
@@ -224,7 +224,7 @@ void Tank_ai::control() {
         }
         //rotate+，顺时针旋转
         else if(move_judge==1){
-            head_degree += Degree(ROTATE_SPEED);
+            head_degree += Degree(90);
             while (head_degree >= 360) {
                 head_degree -= 360;
             }
@@ -232,7 +232,7 @@ void Tank_ai::control() {
         }
         //rotate-，逆时针旋转
         else{
-            head_degree -= Degree(ROTATE_SPEED);
+            head_degree -= Degree(90);
             while (head_degree < 0) {
                 head_degree += 360;
             }
@@ -254,7 +254,7 @@ void Tank_ai::control() {
             chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
         //sleep
-        std::this_thread::sleep_for(millisecond(FRAME_TIME));
+        std::this_thread::sleep_for(millisecond(3000));
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
             if(bullet->co()->is_coincide(this->col)){

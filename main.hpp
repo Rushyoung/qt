@@ -138,8 +138,8 @@ public slots:
         std::cerr << "local " << map_convert_screen(tank.pos, tank.pos).x << std::endl;
         emit updateNeeded(draw_data->body_item, map_convert_screen(tank.pos, tank.pos).x, map_convert_screen(tank.pos, tank.pos).y, tank.head_degree);
         emit updateNeeded(draw_data->turret_item, map_convert_screen(tank.pos, tank.pos).x + draw_data->offset * cos(
-                Radians(tank.head_degree)), map_convert_screen(tank.pos, tank.pos).y + draw_data->offset * sin(
-                Radians(tank.head_degree)), tank.turret_degree);
+                Radians(tank.head_degree)) - 40, map_convert_screen(tank.pos, tank.pos).y + draw_data->offset * sin(
+                Radians(tank.head_degree)) - 50, tank.turret_degree);
 
 
             std::cerr << "ai " << map_convert_screen(tank_ai.pos, tank.pos).x << std::endl;
