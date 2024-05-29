@@ -79,6 +79,8 @@ public slots:
     void updateAllGui() {
         // 在这里更新视图
         view->update();
+        int itemCount = scene->items().size();
+        std::cerr << "Number of items in the scene: " << itemCount;
     }
 
 private:
@@ -152,7 +154,9 @@ public slots:
 
             for(auto it = bullets.begin(); it != bullets.end(); /* no increment here */) {
                 if((*it)->enable) {
-                    emit updateNeeded(&(*it)->bullet_item, (*it)->get_Bullet_pos().x, (*it)->get_Bullet_pos().y, 0.0);
+                    std::cerr << "boom" << std::endl;
+                    position temp = (*it)->get_Bullet_pos();
+                    emit updateNeeded(&(*it)->bullet_item, temp.x, temp.y, 0.0);
                     ++it; // only increment here
                 } else {
                     it = bullets.erase(it); // erase returns the iterator to the next element

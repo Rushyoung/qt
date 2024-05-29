@@ -10,7 +10,7 @@
 #define FOR_STRAIGHT_CRITICAL_VALUE 6.0
 #define FOR_TURN_CRITICAL_VALUE 8.0
 #define FIRST_DECISION 5
-
+int fire_flag = 0;
 extern std::vector<std::shared_ptr<Bullet>> bullets;
 
 int whether_first=0;//0为第一次，1为后续
@@ -167,7 +167,7 @@ void Tank_local::control() {
 
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
-            if(bullet->co()->is_coincide(this->col)){
+            if(bullet->co().is_coincide(this->col)){
                 this->broken();
             }
         }
@@ -190,6 +190,13 @@ void baseTank::fire() {
         //TODO:idk what
         //TODO:time delay
         if(GetAsyncKeyState(VK_SPACE)&0x8000){
+            if(fire_flag > 0){
+                fire_flag++;
+                if(fire_flag > 100){
+                    fire_flag = 0;
+                }
+                return;
+            }
             std::cerr << "fire\n" << std::endl;
             bullets.emplace_back(std::make_shared<Bullet>(this));
 //            std::make_shared<Bullet>(this);
@@ -259,7 +266,7 @@ void Tank_ai::control() {
         std::this_thread::sleep_for(millisecond(3000));
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
-            if(bullet->co()->is_coincide(this->col)){
+            if(bullet->co().is_coincide(this->col)){
                 this->broken();
                 bullet->enable = false;
             }

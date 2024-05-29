@@ -174,3 +174,7 @@ Tank_collection* create_tank(tank_type t, int id, Ai_Type ai){
             return new Tank_collection(data, tank_class);
     }
 }
+
+void Bullet::Addbullet() {
+    _window->addBullet(&bullet_item);
+}

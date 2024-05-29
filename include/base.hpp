@@ -132,10 +132,10 @@ public:
         tank->getTurrent_degree()),
                                           bullet_item(*_bullet_draw),
                                           enable(true)
-        //TODO:add bullet
-        {fire_timestamp = unix_time_stamp();id = bullet_id++;}
+        {fire_timestamp = unix_time_stamp();id = bullet_id++;Addbullet();}
     position get_Bullet_pos();
-    Collision *co(){return collision;}
+    void Addbullet();
+    Collision co(){position temp = get_Bullet_pos();return Collision(temp.x, temp.y, BULLET_LENGTH);}
 private:
     struct position origin_pos;
     double degree;
