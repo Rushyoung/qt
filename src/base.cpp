@@ -162,6 +162,7 @@ void Tank_local::control() {
         }
 //        cout << "x" << pos.x << "y" << pos.y << "degree" << head_degree << std::endl;
         //sleep
+        fire();
         std::this_thread::sleep_for(millisecond(FRAME_TIME));
 
 
@@ -185,15 +186,16 @@ position Bullet::get_Bullet_pos() {
 }
 
 void baseTank::fire() {
-    while(true){
+
         //TODO:idk what
         //TODO:time delay
         if(GetAsyncKeyState(VK_SPACE)&0x8000){
+            std::cerr << "fire\n" << std::endl;
             bullets.emplace_back(std::make_shared<Bullet>(this));
-            std::make_shared<Bullet>(this);
+//            std::make_shared<Bullet>(this);
 
         }
-    }
+
 }
 
 
