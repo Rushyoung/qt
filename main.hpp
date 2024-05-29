@@ -128,7 +128,7 @@ public slots:
             position temp(0, 0);
             temp = position(SCREEN_LENGTH/2, SCREEN_WIDTH/2) - tank.pos;
             map_item->setPos(temp.x, temp.y);
-            std::cerr << "map" << temp.x << std::endl;
+//            std::cerr << "map" << temp.x << std::endl;
 
             // 发送信号
 //            std::cerr << "local " << map_convert_screen(tank.pos, tank.pos).x << std::endl;
@@ -144,8 +144,8 @@ public slots:
                 Radians(tank.head_degree)) - 50, tank.turret_degree);
 
 
-            std::cerr << "ai " << map_convert_screen(tank_ai.pos, tank.pos).x << std::endl;
-            std::cerr << "aip " << tank_ai.pos.x << std::endl;
+//            std::cerr << "ai " << map_convert_screen(tank_ai.pos, tank.pos).x << std::endl;
+//            std::cerr << "aip " << tank_ai.pos.x << std::endl;
             emit updateNeeded(draw_data_ai->body_item, -map_convert_screen(tank_ai.pos, tank.pos).x, -map_convert_screen(tank_ai.pos, tank.pos).y, tank_ai.head_degree);
             emit updateNeeded(draw_data_ai->turret_item, -(map_convert_screen(tank_ai.pos, tank.pos).x + draw_data_ai->offset * cos(
                     Radians(tank_ai.head_degree))), -(map_convert_screen(tank_ai.pos, tank.pos).y + draw_data_ai->offset * sin(
