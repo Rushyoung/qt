@@ -6,12 +6,12 @@
 #include "grap.hpp"
 //#include <iostream>
 
-#define ROTATE_SPEED PI/100
+#define ROTATE_SPEED PI/32
 #define FOR_STRAIGHT_CRITICAL_VALUE 6.0
 #define FOR_TURN_CRITICAL_VALUE 8.0
 #define FIRST_DECISION 5
 
-std::vector<Bullet> bullets;
+std::vector<Bullet*> bullets;
 
 int whether_first=0;//0为第一次，1为后续
 
@@ -164,14 +164,26 @@ void Tank_local::control() {
 
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
-            if(bullet.co()->is_coincide(this->col)){
+            cout<<"enter 1"<<std::endl;
+            if(bullet->co().is_coincide(this->col)){
+                cout<<"enter 2"<<std::endl;
                 this->broken();
             }
         }
 
-//        this->fire();
+        if(GetAsyncKeyState(VK_SPACE)&0x8000) {
+            cout<<"YES"<<std::endl;
+            this->fire();
+        }
     }
 }
+
+void baseTank::fire() {
+    cout<<"fire"<<std::endl;
+    bullets.emplace_back(new Bullet(this));
+}
+
+
 
 void baseTank::broken() {
     enable=false;
@@ -180,14 +192,6 @@ void baseTank::broken() {
 position Bullet::get_Bullet_pos() {
     return position(origin_pos.x + BULLET_SPEED * fire_timestamp * cos(Radians(degree)),
                     origin_pos.y + BULLET_SPEED * fire_timestamp * sin(Radians(degree)));
-}
-
-void baseTank::fire() {
-    while(true){
-        if(GetAsyncKeyState(VK_SPACE)&0x8000){
-            bullets.emplace_back(this);
-        }
-    }
 }
 
 
@@ -251,7 +255,7 @@ void Tank_ai::control() {
         std::this_thread::sleep_for(millisecond(FRAME_TIME));
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
-            if(bullet.co()->is_coincide(this->col)){
+            if(bullet->co().is_coincide(this->col)){
                 this->broken();
             }
         }

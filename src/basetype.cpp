@@ -11,6 +11,6 @@ int random(int min, int max) {
 
 }
 
-double distance(const position& a, const position& b) {
+double distance(const position& a,const position& b) {
     return sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
 }
