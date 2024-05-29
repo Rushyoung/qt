@@ -181,9 +181,15 @@ void baseTank::broken() {
 }
 
 position Bullet::get_Bullet_pos() {
-    return position(origin_pos.x + BULLET_SPEED * fire_timestamp * cos(Radians(degree)),
-                    origin_pos.y + BULLET_SPEED * fire_timestamp * sin(Radians(degree)));
+    return position(origin_pos.x,origin_pos.y);
 }
+
+void Bullet::move(){
+    origin_pos.x += BULLET_SPEED  * cos(Radians(degree));
+    origin_pos.y += BULLET_SPEED  * sin(Radians(degree));
+    col.update_pos(origin_pos.x,origin_pos.y);
+}
+
 
 void baseTank::fire() {
 
@@ -263,7 +269,7 @@ void Tank_ai::control() {
             chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
         //sleep
-        std::this_thread::sleep_for(millisecond(3000));
+        std::this_thread::sleep_for(millisecond(300));
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
             if(bullet->co().is_coincide(this->col)){

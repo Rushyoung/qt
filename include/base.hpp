@@ -52,7 +52,13 @@ public:
      * */
     bool is_coincide(Collision other){
         double center_distance = distance(other.pos, pos);
-        double accor_angle=atan((pos.y-other.pos.y)/(pos.x-other.pos.x));//炮弹和坦克身体的相对角度
+        double accor_angle;
+        if((pos.x-other.pos.x)!=0) {
+            accor_angle = atan((pos.y - other.pos.y) / (pos.x - other.pos.x));//炮弹和坦克身体的相对角度
+        }
+        else{
+            accor_angle = PI/2;
+        }
         double real_distance = center_distance - other.edge (accor_angle) - edge(accor_angle);//temp
         return real_distance < 0;
     }
@@ -135,6 +141,7 @@ public:
                                           enable(true)
         {fire_timestamp = unix_time_stamp();id = bullet_id++;Addbullet();}
     position get_Bullet_pos();
+    void move();
     void Addbullet();
     Collision co(){position temp = get_Bullet_pos();return Collision(temp.x, temp.y, BULLET_LENGTH);}
 private:
@@ -143,7 +150,7 @@ private:
     Collision col;
     long long fire_timestamp;
     enum  Ai_Type type;
-    Collision collision;
+//    Collision collision;
 };
 
 
