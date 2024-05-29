@@ -199,9 +199,12 @@ position Bullet::get_Bullet_pos() {
 }
 
 void Bullet::move(){
-    origin_pos.x += BULLET_SPEED  * cos(Radians(degree));
-    origin_pos.y += BULLET_SPEED  * sin(Radians(degree));
-    col.update_pos(origin_pos.x,origin_pos.y);
+    if(origin_pos.x>=MAP_X||origin_pos.x<=0||origin_pos.y>=MAP_Y||origin_pos.y<=0){enable=false;}
+    else {
+        origin_pos.x += BULLET_SPEED * cos(Radians(degree));
+        origin_pos.y += BULLET_SPEED * sin(Radians(degree));
+        col.update_pos(origin_pos.x, origin_pos.y);
+    }
 }
 
 
