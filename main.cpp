@@ -15,6 +15,9 @@ tank_data* sherman_data;
 MainWindow* _window;
 tank_draw_data* draw_data;
 tank_draw_data* draw_data_ai;
+QPixmap* _bullet_draw;
+
+int bullet_id = 0;
 
 //MainWindow* _window;
 
@@ -127,6 +130,9 @@ int main(int argc, char *argv[]) {
     t34_85_data = &_t34_85_data;
     sherman_data = &_sherman_data;
 
+    //TODO:filepath
+    QPixmap bullet_draw("path");
+    _bullet_draw = &bullet_draw;
 
     std::vector<std::unique_ptr<Tank_collection>> tanks;
     tanks.push_back(std::unique_ptr<Tank_collection>(create_tank(sherman, 1, Local)));

@@ -257,6 +257,7 @@ void Tank_ai::control() {
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
             if(bullet->co().is_coincide(this->col)){
                 this->broken();
+                bullet.enable = false;
             }
         }
     }
