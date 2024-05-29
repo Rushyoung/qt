@@ -10,7 +10,7 @@
 #define FOR_STRAIGHT_CRITICAL_VALUE 6.0
 #define FOR_TURN_CRITICAL_VALUE 8.0
 #define FIRST_DECISION 5
-
+int fire_flag = 0;
 extern std::vector<std::shared_ptr<Bullet>> bullets;
 
 int whether_first=0;//0为第一次，1为后续
@@ -147,7 +147,7 @@ void Tank_local::control() {
             changed = true;
         }
 //        if(GetAsyncKeyState(VK_LEFT)&0x8000){
-        if(GetAsyncKeyState('K')&0x8000){
+        if(GetAsyncKeyState('J')&0x8000){
 //            std::cerr << "turn-" << std::endl;
             turret_degree += Degree(ROTATE_SPEED);
             while (turret_degree < 0) {
@@ -167,7 +167,7 @@ void Tank_local::control() {
 
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
-            if(bullet->co()->is_coincide(this->col)){
+            if(bullet->co().is_coincide(this->col)){
                 this->broken();
             }
         }
@@ -190,6 +190,13 @@ void baseTank::fire() {
         //TODO:idk what
         //TODO:time delay
         if(GetAsyncKeyState(VK_SPACE)&0x8000){
+            if(fire_flag > 0){
+                fire_flag++;
+                if(fire_flag > 100){
+                    fire_flag = 0;
+                }
+                return;
+            }
             std::cerr << "fire\n" << std::endl;
             bullets.emplace_back(std::make_shared<Bullet>(this));
 //            std::make_shared<Bullet>(this);
@@ -226,7 +233,7 @@ void Tank_ai::control() {
         }
         //rotate+，顺时针旋转
         else if(move_judge==1){
-            head_degree += Degree(ROTATE_SPEED);
+            head_degree += Degree(90);
             while (head_degree >= 360) {
                 head_degree -= 360;
             }
@@ -234,7 +241,7 @@ void Tank_ai::control() {
         }
         //rotate-，逆时针旋转
         else{
-            head_degree -= Degree(ROTATE_SPEED);
+            head_degree -= Degree(90);
             while (head_degree < 0) {
                 head_degree += 360;
             }
@@ -256,10 +263,10 @@ void Tank_ai::control() {
             chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
         }
         //sleep
-        std::this_thread::sleep_for(millisecond(FRAME_TIME));
+        std::this_thread::sleep_for(millisecond(3000));
 
         for (auto& bullet : bullets) { // 遍历并更新所有子弹
-            if(bullet->co()->is_coincide(this->col)){
+            if(bullet->co().is_coincide(this->col)){
                 this->broken();
                 bullet->enable = false;
             }

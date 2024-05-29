@@ -51,8 +51,6 @@ public:
      * @return:碰撞1，没碰0
      * */
     bool is_coincide(Collision other){
-        cout<<"enter is"<<std::endl;
-        cout<<pos.x<<" "<<pos.y<<std::endl;
         double center_distance = distance(other.pos, pos);
         double accor_angle=atan((pos.y-other.pos.y)/(pos.x-other.pos.x));//炮弹和坦克身体的相对角度
         double real_distance = center_distance - other.edge (accor_angle) - edge(accor_angle);//temp
@@ -132,16 +130,13 @@ public:
                                           col(tank->getX() + tank->getLength() * cos(Radians(tank->getTurrent_degree())),
         tank->getY() + tank->getLength() * sin(Radians(tank->getTurrent_degree())),
         BULLET_LENGTH,
-        tank->getTurrent_degree()),collision(get_Bullet_pos().x,get_Bullet_pos().y,BULLET_RADIUS,tank->getDegree()){fire_timestamp = unix_time_stamp();
-    cout<<"construct a bullet"<<std::endl;
-    }
         tank->getTurrent_degree()),
                                           bullet_item(*_bullet_draw),
                                           enable(true)
-        //TODO:add bullet
-        {fire_timestamp = unix_time_stamp();id = bullet_id++;}
+        {fire_timestamp = unix_time_stamp();id = bullet_id++;Addbullet();}
     position get_Bullet_pos();
-    Collision co(){return collision;}
+    void Addbullet();
+    Collision co(){position temp = get_Bullet_pos();return Collision(temp.x, temp.y, BULLET_LENGTH);}
 private:
     struct position origin_pos;
     double degree;
