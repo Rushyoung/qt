@@ -160,7 +160,7 @@ public slots:
                     it = bullets.erase(it); // erase returns the iterator to the next element
                     continue;
                 }
-                if((*it)->enable) {
+                if(it != bullets.end() && (*it)->enable) {
                     std::cerr << "boom" << std::endl;
                     position temp = (*it)->get_Bullet_pos();
                     temp = map_convert_screen(temp, tank.pos);
