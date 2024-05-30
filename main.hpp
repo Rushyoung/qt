@@ -61,7 +61,7 @@ public:
     }
     void addBullet(QGraphicsPixmapItem* item){
         scene->addItem(item);
-        item->setZValue(4);
+        item->setZValue(2);
     }
     ~MainWindow(){
         delete scene;
@@ -153,26 +153,51 @@ public slots:
             emit updateNeeded(draw_data_ai->turret_item, 2000-(map_convert_screen(tank_ai.pos, tank.pos).x + draw_data_ai->offset * cos(
                     Radians(tank_ai.head_degree))), 1000-(map_convert_screen(tank_ai.pos, tank.pos).y + draw_data_ai->offset * sin(
                     Radians(tank_ai.head_degree))), tank_ai.turret_degree);
-
+            if(!tank_ai.enable){
+                emit updateNeeded(draw_data_ai->turret_item, 5000, 5000, tank_ai.turret_degree);
+            }
 
             for(auto it = bullets.begin(); it != bullets.end(); /* no increment here */) {
-                if(*it == NULL) {
-                    it = bullets.erase(it); // erase returns the iterator to the next element
-                    continue;
-                }
-                if(it != bullets.end() && (*it)->enable) {
-                    std::cerr << "boom" << std::endl;
-                    position temp = (*it)->get_Bullet_pos();
-                    temp = map_convert_screen(temp, tank.pos);
-                    emit updateNeeded(&(*it)->bullet_item, MAP_X/2-temp.x + 640, MAP_Y/2-temp.y -120, 0.0);
-                    ++it; // only increment here
-                    if(it == bullets.end()) {
-                        break;
+                try {
+                    if(it == bullets.end() || *it == NULL) {
+                        return; // Exit the function immediately
                     }
-                } else {
-                    it = bullets.erase(it); // erase returns the iterator to the next element
+                    if(it != bullets.end() && (*it)->enable) {
+                        std::cerr << "boom" << std::endl;
+                        if(*it == NULL){break;}
+                        position temp = (*it)->get_Bullet_pos();
+                        temp = map_convert_screen(temp, tank.pos);
+                        
+                        emit updateNeeded(&(*it)->bullet_item, MAP_X/2-temp.x + 640, MAP_Y/2-temp.y -120, 0.0);
+                        ++it; // only increment here
+                        if(it == bullets.end()) {
+                            break;
+                        }
+                    } else {
+                        it = bullets.erase(it); // erase returns the iterator to the next element
+                    }
+                } catch(...) {
+                    std::cerr << "error";
+                    return; // Exit the function immediately if an exception is thrown
                 }
             }
+            // for(auto it = bullets.begin(); it != bullets.end(); /* no increment here */) {
+            //     if(it == bullets.end() || *it == NULL) {
+            //         return; // Exit the function immediately
+            //     }
+            //     if((*it)->enable) {
+            //         std::cerr << "boom" << std::endl;
+            //         position temp = (*it)->get_Bullet_pos();
+            //         temp = map_convert_screen(temp, tank.pos);
+            //         emit updateNeeded(&(*it)->bullet_item, MAP_X/2-temp.x + 640, MAP_Y/2-temp.y -120, 0.0);
+            //         ++it; // only increment here
+            //         if(it == bullets.end()) {
+            //             break;
+            //         }
+            //     } else {
+            //         it = bullets.erase(it); // erase returns the iterator to the next element
+            //     }
+            // }
             emit updateAllGui();
         // }
     }

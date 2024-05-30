@@ -70,7 +70,7 @@ struct Tank_collection {
             tank_class->update_draw(&drawData);
             _window->addTank(&this->drawData);
             drawData.body_item->setZValue(1);
-            drawData.turret_item->setZValue(2);
+            drawData.turret_item->setZValue(3);
             tank_thread.detach();  // 分离线程
     }
     // Tank_collection(tank_data* data, baseTank* tank_class)

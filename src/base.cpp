@@ -161,7 +161,7 @@ void Tank_local::control() {
         if(GetAsyncKeyState(VK_SPACE)&0x8000) {
             if (fire_flag > 0) {
                 fire_flag++;
-                if (fire_flag > 25) {
+                if (fire_flag > 100) {
                     fire_flag = 0;
                 }
             }else {
@@ -294,7 +294,7 @@ void Tank_ai::control() {
             if(bullet->co().is_coincide(this->col)){
                 this->broken();
                 bullet->enable = false;
-                chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, true));
+                chan<Tank_info>("ai2").send(Tank_info(id, pos, head_degree, turret_degree, false));
                 return;
             }
         }
